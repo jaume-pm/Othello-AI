@@ -48,4 +48,7 @@ public class HumanPlayer implements IPlayer {
     public String getName() {
         return "Human(" + name + ")";
     }
+    
+   
+    
 }
