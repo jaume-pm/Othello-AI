@@ -23,7 +23,7 @@ public class PlayerID implements IPlayer, IAuto {
   private CellType color;
   private boolean timeout;
   private String nom;
-  private int profunditat;
+  private int profunditat=2;
   private int jugades;  //Jugades explorades
   private int nJugades; //# jugades reals
   private double sumTime = 0; //Suma del temps que tarda cada jugada
@@ -56,7 +56,8 @@ public class PlayerID implements IPlayer, IAuto {
     @Override
     public Move move(GameStatus s) {
         color = s.getCurrentPlayer();
-        return new Move(IterativeMinMax(s, profunditat),0,0,SearchType.MINIMAX_IDS);
+        Point res = IterativeMinMax(s);
+        return new Move(res,0, profunditat,SearchType.MINIMAX_IDS);
     }
 
     /**
@@ -68,13 +69,15 @@ public class PlayerID implements IPlayer, IAuto {
         return name;
     }
     
-    public Point IterativeMinMax(GameStatus s, int profunditat){
+    public Point IterativeMinMax(GameStatus s){
         timeout = true;
-        int i=2;
-        Point res = minMax(s,1);
+        Point preres = minMax(s,1);
+        Point res = preres;
         while(timeout){
-            res = minMax(s,i);
-            ++i;
+            preres = res;
+            res = minMax(s,profunditat);
+            if(!timeout)return preres;
+            ++profunditat;
         }
         return res;
     }
@@ -90,6 +93,7 @@ public class PlayerID implements IPlayer, IAuto {
         int alfa = -MAX;
         int beta = MAX;
         for (Point move : moves){
+                if(!timeout)return res;
                 GameStatus aux = new GameStatus(s);
                 aux.movePiece(move); //Cal fer un tauler auxiliar cada cop
                 int min = minValor(aux, alfa, beta, profunditat-1);
@@ -115,6 +119,7 @@ public class PlayerID implements IPlayer, IAuto {
     * @param profunditat profunditat del arbre de jugades.
     */
     public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
+        if(!timeout)return 0;
         if(s.isGameOver()){
             if(color == s.GetWinner())
                 return MAX;
@@ -151,6 +156,7 @@ public class PlayerID implements IPlayer, IAuto {
     * @param profunditat profunditat del arbre de jugades.
     */
     public int minValor(GameStatus s, int alfa, int beta, int profunditat){
+        if(!timeout)return 0;
         if(s.isGameOver()){
             if(color == s.GetWinner())
                 return MAX;
