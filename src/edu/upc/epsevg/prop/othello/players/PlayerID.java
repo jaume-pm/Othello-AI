@@ -27,7 +27,7 @@ public class PlayerID implements IPlayer, IAuto {
   private int jugades;  //Jugades explorades
   private int nJugades; //# jugades reals
   private double sumTime = 0; //Suma del temps que tarda cada jugada
-  private int heuristic = 1;
+  private int heuristic = 0;
   static int[][] matrix = {{6, 2, 4, 4, 4, 4, 2, 6},
                              {2, -4, -2, -2, -2, -2, -4, 2},
                              {4, -2, 1, 1, 1, 1, -2, 4},
