@@ -31,7 +31,7 @@ public class Game {
                 IPlayer player1 = new DesdemonaPlayer(1);//GB
                 IPlayer player2 = new PlayerID("Minimax Iteratiu");
                                 
-                new Board(player1 , player2, 2, false);
+                new Board(player1 , player2, 1, false);
              }
         });
     }

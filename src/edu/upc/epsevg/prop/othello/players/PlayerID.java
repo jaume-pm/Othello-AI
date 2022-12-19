@@ -4,6 +4,7 @@ import edu.upc.epsevg.prop.othello.CellType;
 import edu.upc.epsevg.prop.othello.GameStatus;
 import edu.upc.epsevg.prop.othello.Heuristica_0;
 import edu.upc.epsevg.prop.othello.Heuristica_1;
+import edu.upc.epsevg.prop.othello.Heuristica_2;
 import edu.upc.epsevg.prop.othello.IAuto;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.Move;
@@ -32,6 +33,7 @@ public class PlayerID implements IPlayer, IAuto {
     private int heuristic = 1;
     private Heuristica_1 heur1 = new Heuristica_1();
     private Heuristica_0 heur0 = new Heuristica_0();
+    private Heuristica_2 heur2 = new Heuristica_2();
 
     public PlayerID(String name) {
         this.name = name;
@@ -192,15 +194,17 @@ public class PlayerID implements IPlayer, IAuto {
         }
     }
 
-    
-        public int getHeuristica(GameStatus s){
-        switch(heuristic){
+    public int getHeuristica(GameStatus s) {
+        switch (heuristic) {
             case 1:
                 //Segona heurística
-                return heur1.heuristica(s,color);
+                return heur1.heuristica(s, color);
+            case 2:
+                //Segona heurística
+                return heur2.heuristica(s, color);
             default:
                 //Primera heuristica, la més senzilla 
-                return heur0.heuristica(s,color);
+                return heur0.heuristica(s, color);
         }
     }
 

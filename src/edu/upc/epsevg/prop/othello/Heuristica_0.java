@@ -19,7 +19,7 @@ public class Heuristica_0 {
     static int contadorAliat;
     static int contadorEnemic;
 
-    static void init(CellType color) {
+    static void init(GameStatus s, CellType color) {
         // GameStatus ha d'ENTRAR COM A PARÀMETRE!
         size = gs.getSize();
         aliat = color.toString(); // Afegir un paràmetre per posar aquí
@@ -41,9 +41,12 @@ public class Heuristica_0 {
         }
     }
     
-    public static void heuristica(GameStatus s,CellType color) {
-        init(color);
+    public static int heuristica(GameStatus s,CellType color) {
+        init(s,color);
         recorregut();
+        if(contadorAliat == 0) return -10000;
+        else if(contadorEnemic == 0) return 10000;
+        else return contadorAliat - contadorEnemic;
         
     }
 }
