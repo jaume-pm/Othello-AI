@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package edu.upc.epsevg.prop.othello;
+import java.util.BitSet;
 import java.util.Random;
 
 /**
@@ -13,6 +14,9 @@ public class Zobrist {
 
     // Constants for the Othello board
     final int BOARD_SIZE = 8;
+    private BitSet ocupations = new BitSet();
+    private BitSet colors = new BitSet();
+
 
     // Choose a set of random hash keys for each position and each piece
     long[][][] hashKeys = new long[2][BOARD_SIZE][BOARD_SIZE];
@@ -54,6 +58,45 @@ public class Zobrist {
       }
 
       return hashCode;
+    }
+    
+    public long computeZobristHashBits(GameStatus s) {
+      // Initialize the hash code to 0
+
+      long hashCode = 0;
+
+      // Iterate over each position on the board
+      for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+          // Determine the piece at this position (if any)
+          CellType cellPiece = s.getPos(i,j);
+          if ("EMPTY".equals(cellPiece.name())){
+              ocupations.set(i*BOARD_SIZE+j, false);
+              colors.set(i*BOARD_SIZE+j, false);
+              continue;
+          }
+          ocupations.set(i*BOARD_SIZE+j);
+          int piece = 0;
+          if ("PLAYER2".equals(cellPiece.name())){
+              ++piece;
+              colors.set(i*BOARD_SIZE+j);
+          } else {
+              colors.set(i*BOARD_SIZE+j, false);
+          }
+          // Add the corresponding hash key to the hash code
+          hashCode ^= hashKeys[piece][i][j];
+        }
+      }
+
+      return hashCode;
+    }
+    
+    public long ocupationLong(){
+        return ocupations.toLongArray()[0];
+    }
+    
+    public long colorLong(){
+        return colors.toLongArray()[0];
     }
 
 }
