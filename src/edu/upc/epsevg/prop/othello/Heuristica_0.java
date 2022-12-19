@@ -19,18 +19,14 @@ public class Heuristica_0 {
     static int contadorAliat;
     static int contadorEnemic;
 
-    static void init() {
+    static void init(CellType color) {
         // GameStatus ha d'ENTRAR COM A PARÀMETRE!
         size = gs.getSize();
-        aliat = "AQUÍ ENTRA PER PARÀMETRE"; // Afegir un paràmetre per posar aquí
+        aliat = color.toString(); // Afegir un paràmetre per posar aquí
         contadorAliat = 0;
         contadorEnemic = 0;
     }
 
-    static void finit() {
-        contadorAliat = 0;
-        contadorEnemic = 0;
-    }
 
     static void recorregut() {
         for (int f = 0; f <= size; ++f) {
@@ -45,9 +41,9 @@ public class Heuristica_0 {
         }
     }
     
-    static void heuristica() {
-        init();
+    public static void heuristica(GameStatus s,CellType color) {
+        init(color);
         recorregut();
-        finit();
+        
     }
 }

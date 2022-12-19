@@ -12,14 +12,14 @@ package edu.upc.epsevg.prop.othello;
 //Problemes: Valors massa propers, posar més diferencia entre ells.
 public class Heuristica_1 {
     
-    static int[][] matrix = {{6, 2, 4, 4, 4, 4, 2, 6},
-                             {2, -4, -2, -2, -2, -2, -4, 2},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {2, -4, -2, -2, -2, -2, -2, 2},
-                             {6, 2, 4, 4, 4, 4, 2, 6}};
+    static int[][] matrix = {{200, -50, 30, 30, 30, 30, -50, 200},
+                             {-50, -100, -20, -20, -20, -20, -100, -50},
+                             {30, -20, 1, 1, 1, 1, -20, 30},
+                             {30, -20, 1, 1, 1, 1, -20, 30},
+                             {30, -20, 1, 1, 1, 1, -20, 30},
+                             {30, -20, 1, 1, 1, 1, -20, 30},
+                             {-50, -100, -20, -20, -20, -20, -100, -50},
+                             {200, -50, 30, 30, 30, 30, -50, 200}};
     static int size = 0;
     static GameStatus gs = new GameStatus();
     static String aliat;
@@ -44,8 +44,8 @@ public class Heuristica_1 {
     }
 
     static void recorregut() {
-        for (int f = 0; f <= size; ++f) {
-            for (int c = 0; c <= size; ++c) {
+        for (int f = 0; f < size; ++f) {
+            for (int c = 0; c < size; ++c) {
                 CellType ct = gs.getPos(c, f);
                 if (ct.name() == aliat) {
                     contadorAliat = contadorAliat + getPes(c,f);
@@ -56,10 +56,12 @@ public class Heuristica_1 {
         }
     }
     
-    static int heuristica(GameStatus s, CellType aliatp) {
+    public static int heuristica(GameStatus s, CellType aliatp) {
         init(s, aliatp);
         recorregut();
-        if(contadorEnemic == 0) return 10000;
-        else return contadorAliat - contadorEnemic;
+        //System.out.print(contadorAliat - contadorEnemic + "\n");
+        if(contadorEnemic == 0) return 100000;
+        if(contadorAliat == 0) return -100000;
+        return contadorAliat - contadorEnemic;
     }
 }
