@@ -28,8 +28,8 @@ public class Game {
                 
                 //IPlayer player1 = new RandomPlayer("Crazy Ivan");
                 //IPlayer player1 = new HumanPlayer("Human1");
-                IPlayer player1 = new DesdemonaPlayer(1);//GB
-                IPlayer player2 = new PlayerID("Minimax Iteratiu");
+                IPlayer player2 = new DesdemonaPlayer(1);//GB
+                IPlayer player1 = new PlayerID("Minimax Iteratiu");
                                 
                 new Board(player1 , player2, 1, false);
              }

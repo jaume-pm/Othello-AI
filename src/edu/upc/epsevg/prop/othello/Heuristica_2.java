@@ -11,64 +11,43 @@ package edu.upc.epsevg.prop.othello;
  */
 //Problemes: Valors massa propers, posar més diferencia entre ells.
 public class Heuristica_2 {
-    
-    static int[][] matrix = {{300, -50, 30, 30, 30, 30, -50, 300},
-                             {-50, -100, -20, -20, -20, -20, -100, -50},
-                             {30, -20, 1, 1, 1, 1, -20, 30},
-                             {30, -20, 1, 1, 1, 1, -20, 30},
-                             {30, -20, 1, 1, 1, 1, -20, 30},
-                             {30, -20, 1, 1, 1, 1, -20, 30},
-                             {-50, -100, -20, -20, -20, -20, -100, -50},
-                             {300, -50, 30, 30, 30, 30, -50, 300}};
-
-    static int size = 0;
-    static GameStatus gs = new GameStatus();
+    // Constants for the weights of different factors in the evaluation function
+    private static final int MOBILITY_WEIGHT = 10;
+    private static final int STABILITY_WEIGHT = 20;
+    private static final int CORNER_WEIGHT = 50;
+    private static final int EDGE_WEIGHT = 10;
     static String aliat;
-    static int contadorAliat;
-    static int contadorEnemic;
-    static int contadorFitxesAliat;
-    static int contadorFitxesEnemic;
 
-    static void init(GameStatus s, CellType aliatp) {
-        contadorFitxesAliat = 0;
-        contadorFitxesEnemic = 0;
-        contadorAliat = 0;
-        contadorEnemic = 0;
-        gs = s;
-        size = gs.getSize();
-        aliat = aliatp.toString();
-    }
-/*
-    static void finit() {
-        contadorAliat = 0;
-        contadorEnemic = 0;
-    }
-    */
-    static int getPes(int c, int f) {
-        return matrix[f][c];
+    // Helper function to compute the mobility of a player
+    private static int computeMobility(GameStatus s) {
+        int legalMoves = s.getMoves().size();
+        return legalMoves;
     }
 
-    static void recorregut() {
-        for (int f = 0; f < size; ++f) {
-            for (int c = 0; c < size; ++c) {
-                CellType ct = gs.getPos(c, f);
-                if (ct.name() == aliat) {
-                    contadorAliat = contadorAliat + getPes(c,f);
-                    contadorFitxesAliat++;
-                } else if (ct.name() != "EMPTY") {
-                    contadorEnemic = contadorEnemic + getPes(c,f);
-                    contadorFitxesEnemic++;
+    // Helper function to compute the stability of a player's pieces
+    private static int computeStability(GameStatus s, CellType player) {
+        int stability = 0;
+        for (int i = 0; i < s.getSize(); i++) {
+            for (int j = 0; j < s.getSize(); j++) {
+                if (s.getPos(i, j) == player) {
+                    // Check if the piece is on a corner
+                    if ((i == 0 || i == s.getSize() - 1) && (j == 0 || j == s.getSize() - 1)) {
+                        stability += CORNER_WEIGHT;
+                    }
+                    // Check if the piece is on an edge
+                    else if (i == 0 || i == s.getSize() - 1 || j == 0 || j == s.getSize() - 1) {
+                        stability += EDGE_WEIGHT;
+                    }
                 }
             }
         }
+        return stability;
     }
-    
-    public static int heuristica(GameStatus s, CellType aliatp) {
-        init(s, aliatp);
-        recorregut();
-        //System.out.print(contadorAliat - contadorEnemic + "\n");
-        if(contadorFitxesAliat == 0) return -100000;
-        else if(contadorFitxesEnemic == 0) return 100000;
-        else return contadorAliat - contadorEnemic;
+
+    public static int heuristic(GameStatus s, CellType aliat) {
+        int mobility = computeMobility(s, aliat) - computeMobility(s, aliat.opposite());
+        int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite());
+        return MOBILITY_WEIGHT * mobility + STABILITY_WEIGHT * stability;
     }
+
 }
