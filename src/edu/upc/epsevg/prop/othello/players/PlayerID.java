@@ -21,7 +21,6 @@ import java.util.Random;
  * @author bernat
  */
 public class PlayerID implements IPlayer, IAuto {
-<<<<<<< HEAD
   private TranspositionTable taula;
   private Zobrist z;
   private Boolean heuristicDepth;
@@ -31,12 +30,15 @@ public class PlayerID implements IPlayer, IAuto {
   final private  int MAX = 10000000;  // Maxim d'heuristica (10M)
   private CellType color;
   private boolean timeout;
+  private int heuristic = 2;
   private String nom;
   private int profunditat=2;
   private int jugades;  //Jugades explorades
   private int nJugades; //# jugades reals
   private double sumTime = 0; //Suma del temps que tarda cada jugada
-  private int heuristic = 1;
+  private Heuristica_1 heur1;
+  private Heuristica_0 heur0;
+  private Heuristica_2 heur2;
   static int[][] matrix = {{6, 2, 4, 4, 4, 4, 2, 6},
                              {2, -4, -2, -2, -2, -2, -4, 2},
                              {4, -2, 1, 1, 1, 1, -2, 4},
@@ -47,28 +49,12 @@ public class PlayerID implements IPlayer, IAuto {
                              {6, 2, 4, 4, 4, 4, 2, 6}};
   
     public PlayerID(String name, int size) {
-=======
-
-    private String name;
-    private GameStatus s;
-    final private int MAX = 10000000;  // Maxim d'heuristica (10M)
-    private CellType color;
-    private boolean timeout;
-    private String nom;
-    private int profunditat = 2;
-    private int jugades;  //Jugades explorades
-    private int nJugades; //# jugades reals
-    private double sumTime = 0; //Suma del temps que tarda cada jugada
-    private int heuristic = 1;
-    private Heuristica_1 heur1 = new Heuristica_1();
-    private Heuristica_0 heur0 = new Heuristica_0();
-    private Heuristica_2 heur2 = new Heuristica_2();
-
-    public PlayerID(String name) {
->>>>>>> 654991e163d15b47321d0703ff5a4f6bd5dd8561
         this.name = name;
         taula = new TranspositionTable(size);
         z = new Zobrist();
+        heur1 = new Heuristica_1();
+        heur0 = new Heuristica_0();
+        heur2 = new Heuristica_2();
     }
 
     @Override
@@ -103,7 +89,6 @@ public class PlayerID implements IPlayer, IAuto {
 
     public Point IterativeMinMax(GameStatus s) {
         timeout = true;
-<<<<<<< HEAD
         heuristicDepth = false;
         Point preres = minMax(s,1);
         Point res = preres;
@@ -133,35 +118,17 @@ public class PlayerID implements IPlayer, IAuto {
         moves.remove(res);
         return res;
     }
-    
+
     public Point minMax(GameStatus s, int profunditat){
         ArrayList<Point> moves =  s.getMoves();
-=======
-        Point preres = minMax(s, 1);
-        Point res = preres;
-        while (timeout) {
-            preres = res;
-            res = minMax(s, profunditat);
-            if (!timeout) {
-                return preres;
-            }
-            ++profunditat;
-        }
-        return res;
-    }
-
-    public Point minMax(GameStatus s, int profunditat) {
-        ArrayList<Point> moves = s.getMoves();
->>>>>>> 654991e163d15b47321d0703ff5a4f6bd5dd8561
         Point res = moves.get(0);
-        if (moves.isEmpty()) {
+        if(moves.isEmpty()){
             // no podem moure, el moviment (de tipus Point) es passa null.
-            return res;
+            return res; 
         }
-        int valor = -MAX - 1;
+        int valor = -MAX-1;
         int alfa = -MAX;
         int beta = MAX;
-<<<<<<< HEAD
         while(!moves.isEmpty()){
                 if(!timeout)return res;
                 GameStatus aux = new GameStatus(s);
@@ -179,44 +146,9 @@ public class PlayerID implements IPlayer, IAuto {
                 alfa = Math.max(valor,alfa);
         }
         return res;
-    }/*for (Point move : moves){
-                if(!timeout)return res;
-                GameStatus aux = new GameStatus(s);
-                aux.movePiece(move); //Cal fer un tauler auxiliar cada cop
-                int min = minValor(aux, alfa, beta, profunditat-1);
-                if (valor < min){
-                    res = move;
-                    valor = min;
-                }
-                if (beta < valor){
-                    return res;
-                }
-                alfa = Math.max(valor,alfa);
-        }
-        return res;
-    }*/
-    
-=======
-        for (Point move : moves) {
-            if (!timeout) {
-                return res;
-            }
-            GameStatus aux = new GameStatus(s);
-            aux.movePiece(move); //Cal fer un tauler auxiliar cada cop
-            int min = minValor(aux, alfa, beta, profunditat - 1);
-            if (valor < min) {
-                res = move;
-                valor = min;
-            }
-            if (beta < valor) {
-                return res;
-            }
-            alfa = Math.max(valor, alfa);
-        }
-        return res;
     }
+    
 
->>>>>>> 654991e163d15b47321d0703ff5a4f6bd5dd8561
     /**
      * Funcio de suport per l'algoritme minmax creat.
      *
@@ -226,20 +158,16 @@ public class PlayerID implements IPlayer, IAuto {
      * @param beta valor de beta per a la poda.
      * @param profunditat profunditat del arbre de jugades.
      */
-    public int maxValor(GameStatus s, int alfa, int beta, int profunditat) {
-        if (!timeout) {
-            return 0;
-        }
-        if (s.isGameOver()) {
-            if (color == s.GetWinner()) {
+     public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
+        if(!timeout)return 0;
+        if(s.isGameOver()){
+            if(color == s.GetWinner())
                 return MAX;
-            } else {
+            else
                 return -MAX;
-            }
         }
-        if (s.getCurrentPlayer() != color) {
+        if(s.getCurrentPlayer() != color)
             return minValor(s, alfa, beta, profunditat);
-<<<<<<< HEAD
         if(profunditat > 0){
             Integer valor = -MAX-1;
             ArrayList<Point> moves =  s.getMoves();
@@ -254,26 +182,12 @@ public class PlayerID implements IPlayer, IAuto {
                     return valor;
                 }
                 alfa = Math.max(valor,alfa);
-=======
-        }
-        if (profunditat > 0) {
-            Integer valor = -MAX - 1;
-            ArrayList<Point> moves = s.getMoves();
-            for (Point move : moves) {
-                GameStatus aux = new GameStatus(s);
-                aux.movePiece(move);
-                valor = Math.max(valor, minValor(aux, alfa, beta, profunditat - 1));
-                if (beta < valor) {
-                    return valor;
-                }
-                alfa = Math.max(valor, alfa);
->>>>>>> 654991e163d15b47321d0703ff5a4f6bd5dd8561
             }
             return valor;
-        } else {
+        }else{
             return getHeuristica(s);
         }
-
+        
     }
 
     /**
@@ -285,20 +199,16 @@ public class PlayerID implements IPlayer, IAuto {
      * @param beta valor de beta per a la poda.
      * @param profunditat profunditat del arbre de jugades.
      */
-    public int minValor(GameStatus s, int alfa, int beta, int profunditat) {
-        if (!timeout) {
-            return 0;
-        }
-        if (s.isGameOver()) {
-            if (color == s.GetWinner()) {
+    public int minValor(GameStatus s, int alfa, int beta, int profunditat){
+        if(!timeout)return 0;
+        if(s.isGameOver()){
+            if(color == s.GetWinner())
                 return MAX;
-            } else {
+            else
                 return -MAX;
-            }
         }
-        if (s.getCurrentPlayer() == color) {
+        if(s.getCurrentPlayer() == color)
             return maxValor(s, alfa, beta, profunditat);
-<<<<<<< HEAD
         if(profunditat > 0){
             Integer valor = MAX-1;
             ArrayList<Point> moves =  s.getMoves();
@@ -313,36 +223,17 @@ public class PlayerID implements IPlayer, IAuto {
                     return valor; 
                 }
                 beta = Math.min(valor,beta);
-=======
-        }
-        if (profunditat > 0) {
-            Integer valor = MAX - 1;
-            ArrayList<Point> moves = s.getMoves();
-            for (Point move : moves) {
-                GameStatus aux = new GameStatus(s);
-                aux.movePiece(move);
-                valor = Math.min(valor, maxValor(aux, alfa, beta, profunditat - 1));
-                if (valor < alfa) {
-                    return valor;
-                }
-                beta = Math.min(valor, beta);
->>>>>>> 654991e163d15b47321d0703ff5a4f6bd5dd8561
             }
             return valor;
-        } else {
+        }
+        else{
             return getHeuristica(s);
         }
     }
-<<<<<<< HEAD
     
-    public int getHeuristica(GameStatus s){
-        heuristicDepth = true;
-        switch(heuristic){
-=======
-
     public int getHeuristica(GameStatus s) {
+        heuristicDepth = true;
         switch (heuristic) {
->>>>>>> 654991e163d15b47321d0703ff5a4f6bd5dd8561
             case 1:
                 //Segona heurística
                 return heur1.heuristica(s, color);

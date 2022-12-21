@@ -19,7 +19,7 @@ public class Heuristica_2 {
     static String aliat;
 
     // Helper function to compute the mobility of a player
-    private static int computeMobility(GameStatus s) {
+    private static int computeMobility(GameStatus s, CellType aliat1) {
         int legalMoves = s.getMoves().size();
         return legalMoves;
     }
@@ -44,9 +44,9 @@ public class Heuristica_2 {
         return stability;
     }
 
-    public static int heuristic(GameStatus s, CellType aliat) {
-        int mobility = computeMobility(s, aliat) - computeMobility(s, aliat.opposite());
-        int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite());
+    public static int heuristica(GameStatus s, CellType aliat) {
+        int mobility = computeMobility(s, aliat) - computeMobility(s, aliat.opposite(aliat));
+        int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite(aliat));
         return MOBILITY_WEIGHT * mobility + STABILITY_WEIGHT * stability;
     }
 
