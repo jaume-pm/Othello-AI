@@ -14,14 +14,18 @@ public class Zobrist {
 
     // Constants for the Othello board
     final int BOARD_SIZE = 8;
-    private BitSet ocupations = new BitSet();
-    private BitSet colors = new BitSet();
+    private BitSet ocupations;
+    private BitSet colors;
 
 
     // Choose a set of random hash keys for each position and each piece
     long[][][] hashKeys = new long[2][BOARD_SIZE][BOARD_SIZE];
 
     public Zobrist() {
+        ocupations = new BitSet(64);
+        colors = new BitSet(64);
+        ocupations.clear();
+        colors.clear();
         Random random = new Random();
         for (int p = 0; p < 2; p++) {
           for (int i = 0; i < BOARD_SIZE; i++) {
@@ -75,11 +79,11 @@ public class Zobrist {
               colors.set(i*BOARD_SIZE+j, false);
               continue;
           }
-          ocupations.set(i*BOARD_SIZE+j);
+          ocupations.set(i*BOARD_SIZE+j,true);
           int piece = 0;
           if ("PLAYER2".equals(cellPiece.name())){
               ++piece;
-              colors.set(i*BOARD_SIZE+j);
+              colors.set(i*BOARD_SIZE+j,true);
           } else {
               colors.set(i*BOARD_SIZE+j, false);
           }
