@@ -42,6 +42,7 @@ public class Board extends MouseAdapter {
     private JControlsPanel controlPanel;
     private JPanel boardPanel;
 
+        private Heuristica_1 heur1 = new Heuristica_1(); //TODO: BORRAR
 
     private IPlayer getCurrentPlayer() {
         return players[CellType.to_01(curPlayer)];
@@ -311,6 +312,7 @@ public class Board extends MouseAdapter {
                     endTurn();
 
                 }
+                System.out.print( heur1.heuristica(status,CellType.PLAYER1) + "\n"); // TODO: BORRAR
             } catch (Exception ignore) {
                 if(ignore!=null) ignore.printStackTrace();
                 Logger.getLogger(Board.class.getName()).log(java.util.logging.Level.SEVERE, "Player is throwing an Exception, game is lost...",
