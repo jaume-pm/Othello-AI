@@ -14,25 +14,26 @@ package edu.upc.epsevg.prop.othello;
 public class Heuristica_0 {
 
     static int size = 0;
-    static GameStatus gs = new GameStatus();
-    static String aliat;
+    static GameStatus gs;
+    static CellType aliat;
     static int contadorAliat;
     static int contadorEnemic;
 
     static void init(GameStatus s, CellType color) {
         // GameStatus ha d'ENTRAR COM A PARÀMETRE!
+        gs = s;
         size = gs.getSize();
-        aliat = color.toString(); // Afegir un paràmetre per posar aquí
+        aliat = color; // Afegir un paràmetre per posar aquí
         contadorAliat = 0;
         contadorEnemic = 0;
     }
 
 
     static void recorregut() {
-        for (int f = 0; f <= size; ++f) {
-            for (int c = 0; c <= size; ++c) {
+        for (int f = 0; f < size; ++f) {
+            for (int c = 0; c < size; ++c) {
                 CellType ct = gs.getPos(c, f);
-                if (ct.name() == aliat) {
+                if (ct == aliat) {
                     ++contadorAliat;
                 } else if (ct.name() != "EMPTY") {
                     ++contadorEnemic;

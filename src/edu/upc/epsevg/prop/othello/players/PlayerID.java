@@ -41,7 +41,7 @@ public class PlayerID implements IPlayer, IAuto {
   private byte tipus = 0;//0 = Exacte, 1 = Alfa, 2 = Beta
   
     public PlayerID(String name, int size) {
-        this.name = name;
+        this.name = name+"-h"+heuristic;
         taula = new TranspositionTable(size);
         z = new Zobrist();
         heur1 = new Heuristica_1();

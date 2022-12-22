@@ -30,8 +30,8 @@ public class Game {
                 //IPlayer player1 = new HumanPlayer("Human1");
                 //IPlayer player1 = new DesdemonaPlayer(1);//GB
                 //IPlayer player2 = new PlayerID("Minimax Iteratiu",1);
-                IPlayer player2 = new DesdemonaPlayer(1);//GB
-                IPlayer player1 = new PlayerID("Minimax Iteratiu",1);
+                IPlayer player1 = new DesdemonaPlayer(1);//GB
+                IPlayer player2 = new PlayerID("IDS",1);
                 //IPlayer player1 = new PlayerMinimax("minimax",8);                
                 new Board(player1 , player2, 10, false);
              }
