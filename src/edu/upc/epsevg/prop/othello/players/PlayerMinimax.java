@@ -3,6 +3,9 @@ package edu.upc.epsevg.prop.othello.players;
 
 import edu.upc.epsevg.prop.othello.CellType;
 import edu.upc.epsevg.prop.othello.GameStatus;
+import edu.upc.epsevg.prop.othello.Heuristica_0;
+import edu.upc.epsevg.prop.othello.Heuristica_1;
+import edu.upc.epsevg.prop.othello.Heuristica_2;
 import edu.upc.epsevg.prop.othello.IAuto;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.Move;
@@ -18,26 +21,22 @@ import java.util.Random;
 public class PlayerMinimax implements IPlayer, IAuto {
 
   private String name;
-  private GameStatus s;
   final private  int MAX = 10000000;  // Maxim d'heuristica (10M)
   private CellType color;
-  private String nom;
   private int profunditat;
-  private int jugades;  //Jugades explorades
-  private int nJugades; //# jugades reals
-  private int heuristic = 1;
-  static int[][] matrix = {{6, 2, 4, 4, 4, 4, 2, 6},
-                             {2, -4, -2, -2, -2, -2, -4, 2},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {2, -4, -2, -2, -2, -2, -2, 2},
-                             {6, 2, 4, 4, 4, 4, 2, 6}};
+  private int nodes;
+  private int maxDepth;
+  private int heuristic = 2;
+  private Heuristica_1 heur1;
+  private Heuristica_0 heur0;
+  private Heuristica_2 heur2;
   
     public PlayerMinimax(String name, int profunditat) {
         this.name = name+" ("+profunditat+")";
         this.profunditat = profunditat;
+        heur1 = new Heuristica_1();
+        heur0 = new Heuristica_0();
+        heur2 = new Heuristica_2();
     }
 
     @Override
@@ -55,7 +54,9 @@ public class PlayerMinimax implements IPlayer, IAuto {
     @Override
     public Move move(GameStatus s) {
         color = s.getCurrentPlayer();
-        return new Move(minMax(s, profunditat),0,0,SearchType.MINIMAX);
+        nodes = 1;
+        maxDepth = 0;
+        return new Move(minMax(s, profunditat),nodes,maxDepth,SearchType.MINIMAX);
     }
 
     /**
@@ -80,12 +81,13 @@ public class PlayerMinimax implements IPlayer, IAuto {
         for (Point move : moves){
                 GameStatus aux = new GameStatus(s);
                 aux.movePiece(move); //Cal fer un tauler auxiliar cada cop
+                ++nodes;
                 int min = minValor(aux, alfa, beta, profunditat-1);
                 if (valor < min){
                     res = move;
                     valor = min;
                 }
-                if (beta < valor){
+                if (beta <= valor){
                     return res;
                 }
                 alfa = Math.max(valor,alfa);
@@ -103,6 +105,7 @@ public class PlayerMinimax implements IPlayer, IAuto {
     * @param profunditat profunditat del arbre de jugades.
     */
     public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
+        maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(s.isGameOver()){
             if(color == s.GetWinner())
                 return MAX;
@@ -117,8 +120,9 @@ public class PlayerMinimax implements IPlayer, IAuto {
             for (Point move : moves){
                     GameStatus aux = new GameStatus(s);
                     aux.movePiece(move);
+                    ++nodes;
                     valor = Math.max(valor, minValor(aux, alfa, beta, profunditat-1));
-                    if (beta < valor){
+                    if (beta <= valor){
                         return valor;
                     }
                     alfa = Math.max(valor,alfa);
@@ -139,6 +143,7 @@ public class PlayerMinimax implements IPlayer, IAuto {
     * @param profunditat profunditat del arbre de jugades.
     */
     public int minValor(GameStatus s, int alfa, int beta, int profunditat){
+        maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(s.isGameOver()){
             if(color == s.GetWinner())
                 return MAX;
@@ -153,8 +158,9 @@ public class PlayerMinimax implements IPlayer, IAuto {
             for (Point move : moves){
                     GameStatus aux = new GameStatus(s);
                     aux.movePiece(move);
+                    ++nodes;
                     valor = Math.min(valor, maxValor(aux, alfa, beta, profunditat-1));
-                    if (valor < alfa){
+                    if (valor <= alfa){
                         return valor; 
                     }
                     beta = Math.min(valor,beta);
@@ -166,47 +172,18 @@ public class PlayerMinimax implements IPlayer, IAuto {
         }
     }
     
-    public int getHeuristica(GameStatus s){
-        switch(heuristic){
+    public int getHeuristica(GameStatus s) {
+        switch (heuristic) {
             case 1:
                 //Segona heurística
-                return heuristica_1(s);
+                return heur1.heuristica(s, color);
+            case 2:
+                //Segona heurística
+                return heur2.heuristica(s, color);
             default:
                 //Primera heuristica, la més senzilla 
-                return heuristica_0(s);
+                return heur0.heuristica(s, color);
         }
-    }
-    
-    public int heuristica_0(GameStatus s) {
-        int res = 0;
-        for (int f = 0; f < s.getSize(); ++f) {
-            for (int c = 0; c < s.getSize(); ++c) {
-                CellType ct = s.getPos(c, f);
-                if (ct == color) {
-                    ++res;
-                } else if (ct.name() != "EMPTY") {
-                    --res;
-                }
-            }
-        }
-        return res;
-    }
-    
-    public int heuristica_1(GameStatus s) {
-            //Aquesta heuristica només és vàlida per a taulells de mida 8
-        if(s.getSize()!=8) return 0;
-        int res = 0;
-        for (int f = 0; f < 8; ++f) {
-            for (int c = 0; c < 8; ++c) {
-                CellType ct = s.getPos(c, f);
-                if (ct == color) {
-                    res+=matrix[f][c];
-                } else if (ct.name() != "EMPTY") {
-                    res-=matrix[f][c];
-                }
-            }
-        }
-        return res;
     }
     
 }

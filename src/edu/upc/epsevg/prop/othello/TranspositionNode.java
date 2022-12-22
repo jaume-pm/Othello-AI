@@ -43,6 +43,14 @@ public class TranspositionNode {
     public long getColors() {
         return colors;
     }
+
+    public byte getType() {
+        return type;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
     
     
 }

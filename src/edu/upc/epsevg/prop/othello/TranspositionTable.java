@@ -36,5 +36,12 @@ public class TranspositionTable {
             index+=size;
         table[index] = nou;
     }
+
+    public TranspositionNode getInfo(long hash) {
+        int index = (int)(hash%size);
+        if(index<0)
+            index+=size;
+        return table[index];
+    }
     
 }

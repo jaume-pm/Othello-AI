@@ -9,6 +9,7 @@ import edu.upc.epsevg.prop.othello.IAuto;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.Move;
 import edu.upc.epsevg.prop.othello.SearchType;
+import edu.upc.epsevg.prop.othello.TranspositionNode;
 import edu.upc.epsevg.prop.othello.TranspositionTable;
 import edu.upc.epsevg.prop.othello.Zobrist;
 import java.awt.Point;
@@ -24,29 +25,20 @@ public class PlayerID implements IPlayer, IAuto {
   private TranspositionTable taula;
   private Zobrist z;
   private Boolean heuristicDepth;
-  private int profunditatActual;  
   private String name;
-  private GameStatus s;
   final private  int MAX = 10000000;  // Maxim d'heuristica (10M)
   private CellType color;
   private boolean timeout;
   private int heuristic = 2;
-  private String nom;
   private int profunditat=2;
-  private int jugades;  //Jugades explorades
-  private int nJugades; //# jugades reals
-  private double sumTime = 0; //Suma del temps que tarda cada jugada
+  private int nodes;
+  private int maxDepth;
+  private long lastHash;
+  private Boolean lastHashAvailible;
   private Heuristica_1 heur1;
   private Heuristica_0 heur0;
   private Heuristica_2 heur2;
-  static int[][] matrix = {{6, 2, 4, 4, 4, 4, 2, 6},
-                             {2, -4, -2, -2, -2, -2, -4, 2},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {4, -2, 1, 1, 1, 1, -2, 4},
-                             {2, -4, -2, -2, -2, -2, -2, 2},
-                             {6, 2, 4, 4, 4, 4, 2, 6}};
+  private byte tipus = 0;//0 = Exacte, 1 = Alfa, 2 = Beta
   
     public PlayerID(String name, int size) {
         this.name = name;
@@ -72,10 +64,9 @@ public class PlayerID implements IPlayer, IAuto {
     @Override
     public Move move(GameStatus s) {
         color = s.getCurrentPlayer();
-        profunditatActual = 60 - s.getEmptyCellsCount();
         profunditat = 1;
         Point res = IterativeMinMax(s);
-        return new Move(res, 0, profunditat, SearchType.MINIMAX_IDS);
+        return new Move(res, nodes, maxDepth, SearchType.MINIMAX_IDS);
     }
 
     /**
@@ -90,19 +81,32 @@ public class PlayerID implements IPlayer, IAuto {
     public Point IterativeMinMax(GameStatus s) {
         timeout = true;
         heuristicDepth = false;
+        nodes = 1;
+        maxDepth = 0;
         Point preres = minMax(s,1);
+        int preNodes = nodes, preMaxDepth = maxDepth;
         Point res = preres;
         while(timeout && heuristicDepth){
             heuristicDepth = false;
+            nodes = 1;
+            maxDepth = 0;
             ++profunditat;
             preres = res;
             res = minMax(s,profunditat);
-            if(!timeout)return preres;
+            if(!timeout){
+                nodes = preNodes;
+                maxDepth = preMaxDepth;
+                return preres;
+            }else{
+                preNodes = nodes;
+                preMaxDepth = maxDepth;
+            }
         }
         return res;
     }
     
     public Point bestMove(GameStatus s, ArrayList<Point> moves){
+        lastHashAvailible = false;
         Point res = moves.get(0);
         int maxValue = -MAX-1;
         for(Point move : moves){
@@ -113,6 +117,8 @@ public class PlayerID implements IPlayer, IAuto {
             if(maxValue < value){
                 maxValue = value;
                 res = move;
+                lastHash = hash;
+                lastHashAvailible = true;
             }
         }
         moves.remove(res);
@@ -129,18 +135,35 @@ public class PlayerID implements IPlayer, IAuto {
         int valor = -MAX-1;
         int alfa = -MAX;
         int beta = MAX;
+        int min  = 0;
         while(!moves.isEmpty()){
                 if(!timeout)return res;
                 GameStatus aux = new GameStatus(s);
                 Point move = bestMove(s, moves);
                 aux.movePiece(move);
-                int min = minValor(aux, alfa, beta, profunditat-1);
-                taula.addNode(s, z, (byte)0, 60-s.getEmptyCellsCount()+profunditat, min);
+                ++nodes;
+                Boolean obtenirMin = true;
+                if(lastHashAvailible){
+                    TranspositionNode info = taula.getInfo(lastHash);
+                    if(info.getDepth() >= 60-s.getEmptyCellsCount()+profunditat){
+                        if(info.getType() == 0){
+                            min = info.getValue();
+                            obtenirMin = false;
+                        }else{
+                            if(info.getType() == 1){
+                                alfa = Math.max(alfa, info.getValue());
+                            }
+                        }
+                    }
+                }
+                if(obtenirMin)min = minValor(aux, alfa, beta, profunditat-1);
+                tipus = 0;
                 if (valor < min){
                     res = move;
                     valor = min;
                 }
-                if (beta < valor){
+                if (beta <= valor){
+                    tipus = 1;
                     return res;
                 }
                 alfa = Math.max(valor,alfa);
@@ -159,6 +182,7 @@ public class PlayerID implements IPlayer, IAuto {
      * @param profunditat profunditat del arbre de jugades.
      */
      public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
+        maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(!timeout)return 0;
         if(s.isGameOver()){
             if(color == s.GetWinner())
@@ -171,14 +195,30 @@ public class PlayerID implements IPlayer, IAuto {
         if(profunditat > 0){
             Integer valor = -MAX-1;
             ArrayList<Point> moves =  s.getMoves();
+            int min = 0;
             while(!moves.isEmpty()){
                 GameStatus aux = new GameStatus(s);
                 Point move = bestMove(s, moves);
                 aux.movePiece(move);
-                int min = minValor(aux, alfa, beta, profunditat-1);
-                taula.addNode(s, z, (byte)0, 60-s.getEmptyCellsCount()+profunditat, min);
+                ++nodes;
+                if(lastHashAvailible){
+                    TranspositionNode info = taula.getInfo(lastHash);
+                    if(info.getDepth() >= 60-s.getEmptyCellsCount()+profunditat){
+                        if(info.getType() == 0){
+                            return info.getValue();
+                        }else{
+                            if(info.getType() == 1){
+                                alfa = Math.max(alfa, info.getValue());
+                            }
+                        }
+                    }
+                }
+                min = minValor(aux, alfa, beta, profunditat-1);
+                taula.addNode(s, z, tipus, 60-s.getEmptyCellsCount()+profunditat, min);
+                tipus = 0;
                 valor = Math.max(valor, min);
-                if (beta < valor){
+                if (beta <= valor){
+                    tipus = 1;
                     return valor;
                 }
                 alfa = Math.max(valor,alfa);
@@ -200,6 +240,7 @@ public class PlayerID implements IPlayer, IAuto {
      * @param profunditat profunditat del arbre de jugades.
      */
     public int minValor(GameStatus s, int alfa, int beta, int profunditat){
+        maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(!timeout)return 0;
         if(s.isGameOver()){
             if(color == s.GetWinner())
@@ -216,10 +257,25 @@ public class PlayerID implements IPlayer, IAuto {
                 GameStatus aux = new GameStatus(s);
                 Point move = bestMove(s, moves);
                 aux.movePiece(move);
+                ++nodes;
+                if(lastHashAvailible){
+                    TranspositionNode info = taula.getInfo(lastHash);
+                    if(info.getDepth() >= 60-s.getEmptyCellsCount()+profunditat){
+                        if(info.getType() == 0){
+                            return info.getValue();
+                        }else{
+                            if(info.getType() == 2){
+                                alfa = Math.min(beta, info.getValue());
+                            }
+                        }
+                    }
+                }
                 int max = maxValor(aux, alfa, beta, profunditat-1);
-                taula.addNode(s, z, (byte)0, 60-s.getEmptyCellsCount()+profunditat, max);
+                taula.addNode(s, z, tipus, 60-s.getEmptyCellsCount()+profunditat, max);
+                tipus = 0;
                 valor = Math.min(valor, max);
-                if (valor < alfa){
+                if (valor <= alfa){
+                    tipus = 2;
                     return valor; 
                 }
                 beta = Math.min(valor,beta);
