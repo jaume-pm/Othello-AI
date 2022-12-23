@@ -5,8 +5,8 @@
 package edu.upc.epsevg.prop.othello.players.pintor;
 
 import edu.upc.epsevg.prop.othello.CellType;
-import edu.upc.epsevg.prop.othello.GameStatus;
 import static edu.upc.epsevg.prop.othello.CellType.opposite;
+import edu.upc.epsevg.prop.othello.GameStatus;
 
 /**
  *
@@ -17,13 +17,13 @@ import static edu.upc.epsevg.prop.othello.CellType.opposite;
 public class Heuristica_3 {
 
     // Constants for the weights of different factors in the evaluation function
-    private static final int MOBILITY_WEIGHT = 10;
-    private static final int STABILITY_WEIGHT = 20;
-    private static final int CORNER_WEIGHT = 100;
-    private static final int EDGE_WEIGHT = 10;
-    private static final int STABLE_WEIGHT = 10;
+    private static final int MOBILITY_WEIGHT = 100;
+private static final int STABILITY_WEIGHT = 300;
+private static final int CORNER_WEIGHT = 1000;
+private static final int EDGE_WEIGHT = 0;
+private static final int PIECE_VALUE = 0;
     private static boolean PROVA = false;
-    
+
     private static int corners = 0;
     static CellType aliat;
     static int size = 0;
@@ -34,14 +34,13 @@ public class Heuristica_3 {
         int legalMoves = s.getMoves().size();
         return legalMoves;
     }
-    
+
     private static int computeEnemyMobility(GameStatus s) {
         GameStatus p = new GameStatus(s);
         p.skipTurn();
         int legalMoves = p.getMoves().size();
         return legalMoves;
     }
-    
 
     private static void init(GameStatus s, CellType paliat) {
         corners = 0;
@@ -67,27 +66,41 @@ public class Heuristica_3 {
             stable = isStableHorizontal(c, f);
         }
         if (stable) {
-            stable = isStableDiagonal(c, f);
+            stable = isStableDiagonal1(c, f);
+        }
+        if (stable) {
+            stable = isStableDiagonal2(c, f);
+        }
+        if (stable) {
+            //System.out.print("La posició: " + "fila: " + f + " columna: " + c + " es estable :D" + "\n");
         }
         return stable;
     }
-    
+
     static boolean isCorner(int f, int c) {
-  // Check if the position is a top left corner
-  if (f == 0 && c == 0) return true;
+        // Check if the position is a top left corner
+        if (f == 0 && c == 0) {
+            return true;
+        }
 
-  // Check if the position is a top right corner
-  if (f == 0 && c == size - 1) return true;
+        // Check if the position is a top right corner
+        if (f == 0 && c == size - 1) {
+            return true;
+        }
 
-  // Check if the position is a bottom left corner
-  if (f == size - 1 && c == 0) return true;
+        // Check if the position is a bottom left corner
+        if (f == size - 1 && c == 0) {
+            return true;
+        }
 
-  // Check if the position is a bottom right corner
-  if (f == size - 1 && c == size - 1) return true;
+        // Check if the position is a bottom right corner
+        if (f == size - 1 && c == size - 1) {
+            return true;
+        }
 
-  // If the position is none of the above, it is not a corner
-  return false;
-}
+        // If the position is none of the above, it is not a corner
+        return false;
+    }
 
     // Helper function to compute the stability of a player's pieces
     private static int computeStability(GameStatus s, CellType player) {
@@ -95,39 +108,41 @@ public class Heuristica_3 {
         for (int i = 0; i < s.getSize(); i++) {
             for (int j = 0; j < s.getSize(); j++) {
                 if (s.getPos(i, j) == player) {
-                    if(isStable(i,j)) stability += STABLE_WEIGHT;
+                    stability += PIECE_VALUE;
+                    if (isStable(i, j)) {
+                        stability += STABILITY_WEIGHT;
+                    }
                     // Check if the piece is on a corner
                     if ((i == 0 || i == s.getSize() - 1) && (j == 0 || j == s.getSize() - 1)) {
                         stability += CORNER_WEIGHT;
-                    }
-                    // Check if the piece is on an edge
+                    } // Check if the piece is on an edge
                     else if (i == 0 || i == s.getSize() - 1 || j == 0 || j == s.getSize() - 1) {
                         stability += EDGE_WEIGHT;
                     }
                 }
             }
         }
-        return stability + gs.getScore(player)*7;
+        return stability + gs.getScore(player) * 7;
     }
 
-    /**
-     *
-     * @param s
-     * @param aliat
-     * @return
-     */
     public static int heuristica(GameStatus s, CellType aliat) {
         init(s, aliat);
         int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite(aliat));
-        int mobility = computeMobility(s) - computeEnemyMobility(s); 
-        return stability - mobility * 20;
+        int mobility = computeMobility(s) - computeEnemyMobility(s);
+        if (gs.getScore(aliat) + gs.getScore(opposite(aliat)) == 64) {
+            if (gs.getScore(aliat) <= gs.getScore(opposite(aliat))) {
+                stability -= 100000;
+            } else {
+                stability += 100000;
+            }
+        }
+        return stability + mobility * MOBILITY_WEIGHT;
     }
 
     private static boolean isStableVertical(int c, int f) {
         CellType origen = gs.getPos(c, f);
         int forigen = f;
         boolean enemic = false, casellaBlanca = false;
-
         while (f >= 0 && !casellaBlanca) {
             CellType actual = gs.getPos(c, f);
             if (actual == CellType.EMPTY) {
@@ -150,20 +165,22 @@ public class Heuristica_3 {
             }
             ++f;
         }
-        if (!casellaBlanca && !casellaBlanca2) {
+
+        if (!casellaBlanca && !enemic || !casellaBlanca2 && !enemic2) {
             return true;
         }
-        if (!(enemic && casellaBlanca2) || !(enemic2 && casellaBlanca)) {
+
+        if (!casellaBlanca && casellaBlanca2) {
             return true;
         }
+
         return false;
     }
 
     private static boolean isStableHorizontal(int c, int f) {
         CellType origen = gs.getPos(c, f);
-        int cOrigen = c;
+        int corigen = c;
         boolean enemic = false, casellaBlanca = false;
-
         while (c >= 0 && !casellaBlanca) {
             CellType actual = gs.getPos(c, f);
             if (actual == CellType.EMPTY) {
@@ -175,7 +192,7 @@ public class Heuristica_3 {
             --c;
         }
         boolean enemic2 = false, casellaBlanca2 = false;
-        c = cOrigen;
+        c = corigen;
         while (c < size && !casellaBlanca2) {
             CellType actual = gs.getPos(c, f);
             if (actual == CellType.EMPTY) {
@@ -186,21 +203,22 @@ public class Heuristica_3 {
             }
             ++c;
         }
-        if (!casellaBlanca && !casellaBlanca2) {
+
+        if (!casellaBlanca && !enemic || !casellaBlanca2 && !enemic2) {
             return true;
         }
-        if (!(enemic && casellaBlanca2) || !(enemic2 && casellaBlanca)) {
+
+        if (!casellaBlanca && casellaBlanca2) {
             return true;
         }
+
         return false;
     }
 
-    private static boolean isStableDiagonal(int c, int f) {
+    private static boolean isStableDiagonal1(int c, int f) {
         CellType origen = gs.getPos(c, f);
-        int cOrigen = c;
-        int fOrigen = f;
+        int corigen = c, forigen = f;
         boolean enemic = false, casellaBlanca = false;
-
         while (c >= 0 && f >= 0 && !casellaBlanca) {
             CellType actual = gs.getPos(c, f);
             if (actual == CellType.EMPTY) {
@@ -213,8 +231,8 @@ public class Heuristica_3 {
             --f;
         }
         boolean enemic2 = false, casellaBlanca2 = false;
-        c = cOrigen;
-        f = fOrigen;
+        c = corigen;
+        f = forigen;
         while (c < size && f < size && !casellaBlanca2) {
             CellType actual = gs.getPos(c, f);
             if (actual == CellType.EMPTY) {
@@ -226,13 +244,56 @@ public class Heuristica_3 {
             ++c;
             ++f;
         }
-        if (!casellaBlanca && !casellaBlanca2) {
+
+        if (!casellaBlanca && !enemic || !casellaBlanca2 && !enemic2) {
             return true;
         }
-        if(casellaBlanca && casellaBlanca2) return false;
-        if (!(enemic && casellaBlanca2) || !(enemic2 && casellaBlanca)) {
+
+        if (!casellaBlanca && casellaBlanca2) {
             return true;
         }
+
+        return false;
+    }
+
+    private static boolean isStableDiagonal2(int c, int f) {
+        CellType origen = gs.getPos(c, f);
+        int corigen = c, forigen = f;
+        boolean enemic = false, casellaBlanca = false;
+        while (c >= 0 && f < size && !casellaBlanca) {
+            CellType actual = gs.getPos(c, f);
+            if (actual == CellType.EMPTY) {
+                casellaBlanca = true;
+            }
+            if (actual == opposite(origen)) {
+                enemic = true;
+            }
+            --c;
+            ++f;
+        }
+        boolean enemic2 = false, casellaBlanca2 = false;
+        c = corigen;
+        f = forigen;
+        while (c < size && f >= 0 && !casellaBlanca2) {
+            CellType actual = gs.getPos(c, f);
+            if (actual == CellType.EMPTY) {
+                casellaBlanca2 = true;
+            }
+            if (actual == opposite(origen)) {
+                enemic2 = true;
+            }
+            ++c;
+            --f;
+        }
+
+        if (!casellaBlanca && !enemic || !casellaBlanca2 && !enemic2) {
+            return true;
+        }
+
+        if (!casellaBlanca && casellaBlanca2) {
+            return true;
+        }
+
         return false;
     }
 
