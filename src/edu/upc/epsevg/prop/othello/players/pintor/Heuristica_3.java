@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package edu.upc.epsevg.prop.othello;
+package edu.upc.epsevg.prop.othello.players.pintor;
 
+import edu.upc.epsevg.prop.othello.CellType;
+import edu.upc.epsevg.prop.othello.GameStatus;
 import static edu.upc.epsevg.prop.othello.CellType.opposite;
 
 /**
@@ -108,8 +110,12 @@ public class Heuristica_3 {
         return stability + gs.getScore(player)*7;
     }
 
-    
-
+    /**
+     *
+     * @param s
+     * @param aliat
+     * @return
+     */
     public static int heuristica(GameStatus s, CellType aliat) {
         init(s, aliat);
         int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite(aliat));

@@ -5,35 +5,35 @@ import edu.upc.epsevg.prop.othello.players.RandomPlayer;
 import edu.upc.epsevg.prop.othello.Level;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.players.DesdemonaPlayer;
-import edu.upc.epsevg.prop.othello.players.PlayerID;
-import edu.upc.epsevg.prop.othello.players.PlayerMinimax;
-
+import edu.upc.epsevg.prop.othello.players.pintor.PlayerID;
+import edu.upc.epsevg.prop.othello.players.pintor.PlayerMinimax;
 
 import javax.swing.SwingUtilities;
 
 /**
  * Lines Of Action: el joc de taula.
+ *
  * @author bernat
  */
 public class Game {
-        /**
+
+    /**
      * @param args
      */
     public static void main(String[] args) {
-        
-        
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                
+
                 //IPlayer player1 = new RandomPlayer("Crazy Ivan");
                 //IPlayer player1 = new HumanPlayer("Human1");
                 //IPlayer player1 = new DesdemonaPlayer(1);//GB
                 //IPlayer player2 = new PlayerID("Minimax Iteratiu",1);
                 IPlayer player1 = new DesdemonaPlayer(1);//GB
-                IPlayer player2 = new PlayerID("IDS",1);
+                IPlayer player2 = new PlayerID("IDS", 1);
                 //IPlayer player1 = new PlayerMinimax("minimax",8);                
-                new Board(player1 , player2, 1, false);
+                new Board(player1 , player2, 2, false);
              }
         });
     }

@@ -1,31 +1,27 @@
-package edu.upc.epsevg.prop.othello.players;
+package edu.upc.epsevg.prop.othello.players.pintor;
 
 import edu.upc.epsevg.prop.othello.CellType;
 import edu.upc.epsevg.prop.othello.GameStatus;
-import edu.upc.epsevg.prop.othello.Heuristica_0;
-import edu.upc.epsevg.prop.othello.Heuristica_1;
-import edu.upc.epsevg.prop.othello.Heuristica_2;
-import edu.upc.epsevg.prop.othello.Heuristica_3;
+import edu.upc.epsevg.prop.othello.players.pintor.Heuristica_0;
+import edu.upc.epsevg.prop.othello.players.pintor.Heuristica_1;
+import edu.upc.epsevg.prop.othello.players.pintor.Heuristica_2;
+import edu.upc.epsevg.prop.othello.players.pintor.Heuristica_3;
 import edu.upc.epsevg.prop.othello.IAuto;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.Move;
 import edu.upc.epsevg.prop.othello.SearchType;
-import edu.upc.epsevg.prop.othello.TranspositionNode;
-import edu.upc.epsevg.prop.othello.TranspositionTable;
-import edu.upc.epsevg.prop.othello.Zobrist;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Jugador aleatori
+ * Jugador IDS
  *
- * @author bernat
+ * @author Roberto i Jaume
  */
 public class PlayerID implements IPlayer, IAuto {
   private TranspositionTable taula;
   private Zobrist z;
-  private Boolean heuristicDepth;
   private String name;
   final private  int MAX = 10000000;  // Maxim d'heuristica (10M)
   private CellType color;
@@ -36,12 +32,18 @@ public class PlayerID implements IPlayer, IAuto {
   private int maxDepth;
   private long lastHash;
   private Boolean lastHashAvailible;
+  private Boolean agressive = true;
   private Heuristica_1 heur1;
   private Heuristica_0 heur0;
   private Heuristica_2 heur2;
   private Heuristica_3 heur3;
   private byte tipus = 0;//0 = Exacte, 1 = Alfa, 2 = Beta
   
+    /**
+     * Constructora de la classe PlayerID
+     * @param name nom del jugador
+     * @param size tamany màxim que ocuparà la taula de transposicions (en GB)
+     */
     public PlayerID(String name, int size) {
         this.name = name+"-h"+heuristic;
         taula = new TranspositionTable(size);
@@ -51,6 +53,9 @@ public class PlayerID implements IPlayer, IAuto {
         heur2 = new Heuristica_2();
     }
 
+    /**
+     * Activa el flag de timeout per tal de parar la cerca que s'està realitzant, en cas de que s'estés realitzant
+     */
     @Override
     public void timeout() {
         timeout = false;
@@ -72,24 +77,28 @@ public class PlayerID implements IPlayer, IAuto {
     }
 
     /**
-     * Ens avisa que hem de parar la cerca en curs perquè s'ha exhaurit el temps
-     * de joc.
+     * Retorna el nom del jugador
+     *
+     * @return el nom del jugador
      */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * Realitza un IDS a partir del tauler proporcionat i no dona resposta fins que o bé acaba la cerca (l'arbre es tan curt que s'ha estudiat per complet) o bé s'activa el tiemout
+     * @param s tauler arrel dels arbres de cerca
+     * @return el moviment que més convé al jugador segons l'heurística seleccionada en el temps donat
+     */
     public Point IterativeMinMax(GameStatus s) {
         timeout = true;
-        heuristicDepth = false;
         nodes = 1;
         maxDepth = 0;
         Point preres = minMax(s,1);
         int preNodes = nodes, preMaxDepth = maxDepth;
         Point res = preres;
-        while(timeout && heuristicDepth){
-            heuristicDepth = false;
+        while(timeout){
             nodes = 1;
             maxDepth = 0;
             ++profunditat;
@@ -107,15 +116,21 @@ public class PlayerID implements IPlayer, IAuto {
         return res;
     }
     
+    /**
+     * Selecciona el millor tauler disponible a la taula de transposicions dins de la llista de moviments donada. Si no en troba cap activa un flag que informa a la cerca que no s'ha trobat cap d'ells a la taula de transposicions mentre que si el troba l'esborra de la llista de moviments possibles, ja que el retornarà.
+     * @param s tauler
+     * @param moves Llista de moviments possibles RESTANTS dins del tauler (Noteu que no és el mateix que s.getMoves ja que sempre tindrà igual o menys moviments)
+     * @return El moviment que millor valoració té a la taula de transposició dins de la llista de moviments
+     */
     public Point bestMove(GameStatus s, ArrayList<Point> moves){
         lastHashAvailible = false;
         Point res = moves.get(0);
-        int maxValue = -MAX-1;
+        int maxValue = -MAX;
         for(Point move : moves){
             GameStatus aux = new GameStatus(s);
             aux.movePiece(move);
             long hash = z.computeZobristHashBits(aux);
-            int value = taula.getValue(hash, z.ocupationLong(), /*z.colorLong()*/3);
+            int value = taula.getValue(hash, z.ocupationLong(), /*z.colorLong()*/0);
             if(maxValue < value){
                 maxValue = value;
                 res = move;
@@ -127,6 +142,12 @@ public class PlayerID implements IPlayer, IAuto {
         return res;
     }
 
+    /**
+     * Realitza una cerca minimax amb poda alfa beta utilitzant taules de taules de transposicio
+     * @param s tauler arrel de l'arbre de cerca
+     * @param profunditat profunditat màxima a la que arribarà l'arbre de creca
+     * @return el moviment que més convé al jugador segons l'heurística i profunditat seleccionades amb el temps donat (timeout s'ho peta tot)
+     */
     public Point minMax(GameStatus s, int profunditat){
         ArrayList<Point> moves =  s.getMoves();
         Point res = moves.get(0);
@@ -145,7 +166,7 @@ public class PlayerID implements IPlayer, IAuto {
                 aux.movePiece(move);
                 ++nodes;
                 Boolean obtenirMin = true;
-                if(lastHashAvailible){
+                if(lastHashAvailible && agressive){
                     TranspositionNode info = taula.getInfo(lastHash);
                     if(info.getDepth() >= 60-s.getEmptyCellsCount()+profunditat){
                         if(info.getType() == 0){
@@ -165,7 +186,8 @@ public class PlayerID implements IPlayer, IAuto {
                     valor = min;
                 }
                 if (beta <= valor){
-                    tipus = 1;
+                    if(!timeout)return res;
+                    taula.addNode(s, z, (byte)1, (byte) (60-s.getEmptyCellsCount()+profunditat), valor);
                     return res;
                 }
                 alfa = Math.max(valor,alfa);
@@ -175,14 +197,14 @@ public class PlayerID implements IPlayer, IAuto {
     
 
     /**
-     * Funcio de suport per l'algoritme minmax creat.
-     *
-     * @param t tauler sobre el qual fer el moviment
-     * @param col columna sobre la qual s'ha fet l'ultima jugada.
-     * @param alfa valor de alfa per a la poda
-     * @param beta valor de beta per a la poda.
-     * @param profunditat profunditat del arbre de jugades.
-     */
+    * Funcio de suport per l'algoritme minmax creat. S'encarrega de retornar el valor de la heuristica d'un tauler en els nivell MAX de l'algorisme per a una profunditat donada
+    *
+     * @param s tauler node del nivell MAX a retornar el valor
+    * @param alfa valor de alfa per a la poda
+    * @param beta valor de beta per a la poda.
+    * @param profunditat profunditat del arbre de jugades.
+     * @return el valor de la heuristica d'un tauler en els nivell MAX de l'algorisme per a una profunditat donada
+    */
      public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
         maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(!timeout)return 0;
@@ -203,7 +225,7 @@ public class PlayerID implements IPlayer, IAuto {
                 Point move = bestMove(s, moves);
                 aux.movePiece(move);
                 ++nodes;
-                if(lastHashAvailible){
+                if(lastHashAvailible && agressive){
                     TranspositionNode info = taula.getInfo(lastHash);
                     if(info.getDepth() >= 60-s.getEmptyCellsCount()+profunditat){
                         if(info.getType() == 0){
@@ -216,7 +238,8 @@ public class PlayerID implements IPlayer, IAuto {
                     }
                 }
                 min = minValor(aux, alfa, beta, profunditat-1);
-                taula.addNode(s, z, tipus, 60-s.getEmptyCellsCount()+profunditat, min);
+                if(!timeout)return 0;
+                taula.addNode(s, z, tipus, (byte) (60-s.getEmptyCellsCount()+profunditat), min);
                 tipus = 0;
                 valor = Math.max(valor, min);
                 if (beta <= valor){
@@ -233,14 +256,14 @@ public class PlayerID implements IPlayer, IAuto {
     }
 
     /**
-     * Funcio de suport per l'algoritme minmax creat.
-     *
-     * @param t tauler sobre el qual fer el moviment
-     * @param col columna sobre la qual s'ha fet l'ultima jugada.
-     * @param alfa valor de alfa per a la poda
-     * @param beta valor de beta per a la poda.
-     * @param profunditat profunditat del arbre de jugades.
-     */
+    * Funcio de suport per l'algoritme minmax creat. S'encarrega de retornar el valor de la heuristica d'un tauler en els nivell MIN de l'algorisme per a una profunditat donada
+    *
+     * @param s tauler node del nivell MAX a retornar el valor
+    * @param alfa valor de alfa per a la poda
+    * @param beta valor de beta per a la poda.
+    * @param profunditat profunditat del arbre de jugades.
+     * @return el valor de la heuristica d'un tauler en els nivell Min de l'algorisme per a una profunditat donada
+    */
     public int minValor(GameStatus s, int alfa, int beta, int profunditat){
         maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(!timeout)return 0;
@@ -260,20 +283,21 @@ public class PlayerID implements IPlayer, IAuto {
                 Point move = bestMove(s, moves);
                 aux.movePiece(move);
                 ++nodes;
-                if(lastHashAvailible){
+                if(lastHashAvailible && agressive){
                     TranspositionNode info = taula.getInfo(lastHash);
                     if(info.getDepth() >= 60-s.getEmptyCellsCount()+profunditat){
                         if(info.getType() == 0){
                             return info.getValue();
                         }else{
                             if(info.getType() == 2){
-                                alfa = Math.min(beta, info.getValue());
+                                beta = Math.min(beta, info.getValue());
                             }
                         }
                     }
                 }
                 int max = maxValor(aux, alfa, beta, profunditat-1);
-                taula.addNode(s, z, tipus, 60-s.getEmptyCellsCount()+profunditat, max);
+                if(!timeout)return 0;
+                taula.addNode(s, z, tipus, (byte) (60-s.getEmptyCellsCount()+profunditat), max);
                 tipus = 0;
                 valor = Math.min(valor, max);
                 if (valor <= alfa){
@@ -289,8 +313,12 @@ public class PlayerID implements IPlayer, IAuto {
         }
     }
     
+    /**
+     * Calcula l'heurística del tauler rebut per paràmetre segons l'heuristica que tingui configurada a l'atribut privat heuristic
+     * @param s tauler del qual se'n calcularà l'heurística
+     * @return l'heurística del tauler rebut per paràmetre
+     */
     public int getHeuristica(GameStatus s) {
-        heuristicDepth = true;
         switch (heuristic) {
             case 1:
                 //Segona heurística

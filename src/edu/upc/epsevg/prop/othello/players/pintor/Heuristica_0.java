@@ -2,7 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package edu.upc.epsevg.prop.othello;
+package edu.upc.epsevg.prop.othello.players.pintor;
+
+import edu.upc.epsevg.prop.othello.CellType;
+import edu.upc.epsevg.prop.othello.GameStatus;
 
 /**
  *
@@ -42,6 +45,12 @@ public class Heuristica_0 {
         }
     }
     
+    /**
+     *
+     * @param s
+     * @param color
+     * @return
+     */
     public static int heuristica(GameStatus s,CellType color) {
         init(s,color);
         recorregut();

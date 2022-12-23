@@ -1,11 +1,8 @@
-package edu.upc.epsevg.prop.othello.players;
+package edu.upc.epsevg.prop.othello.players.pintor;
 
 
 import edu.upc.epsevg.prop.othello.CellType;
 import edu.upc.epsevg.prop.othello.GameStatus;
-import edu.upc.epsevg.prop.othello.Heuristica_0;
-import edu.upc.epsevg.prop.othello.Heuristica_1;
-import edu.upc.epsevg.prop.othello.Heuristica_2;
 import edu.upc.epsevg.prop.othello.IAuto;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.Move;
@@ -15,8 +12,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Jugador aleatori
- * @author bernat
+ * Jugador Minimax
+ *
+ * @author Roberto i Jaume
  */
 public class PlayerMinimax implements IPlayer, IAuto {
 
@@ -31,6 +29,11 @@ public class PlayerMinimax implements IPlayer, IAuto {
   private Heuristica_0 heur0;
   private Heuristica_2 heur2;
   
+    /**
+     * Constructora de la classe PlayerMinimax
+     * @param name nom del jugador
+     * @param profunditat profunditat máxima de l'arbre de cerca per cada moviment
+     */
     public PlayerMinimax(String name, int profunditat) {
         this.name = name+" ("+profunditat+")";
         this.profunditat = profunditat;
@@ -39,6 +42,9 @@ public class PlayerMinimax implements IPlayer, IAuto {
         heur2 = new Heuristica_2();
     }
 
+    /**
+     *
+     */
     @Override
     public void timeout() {
         // Nothing to do! I'm so fast, I never timeout 8-)
@@ -60,15 +66,22 @@ public class PlayerMinimax implements IPlayer, IAuto {
     }
 
     /**
-     * Ens avisa que hem de parar la cerca en curs perquè s'ha exhaurit el temps
-     * de joc.
+     * Retorna el nom del jugador
+     *
+     * @return el nom del jugador
      */
     @Override
     public String getName() {
         return name;
     }
 
-     public Point minMax(GameStatus s, int profunditat){
+    /**
+     * Realitza una cerca minimax amb poda alfa beta
+     * @param s tauler arrel de l'arbre de cerca
+     * @param profunditat profunditat màxima a la que arribarà l'arbre de creca
+     * @return el moviment que més convé al jugador segons l'heurística i profunditat seleccionades
+     */
+    public Point minMax(GameStatus s, int profunditat){
         ArrayList<Point> moves =  s.getMoves();
         Point res = moves.get(0);
         if(moves.isEmpty()){
@@ -96,13 +109,13 @@ public class PlayerMinimax implements IPlayer, IAuto {
     }
     
     /**
-    * Funcio de suport per l'algoritme minmax creat.
+    * Funcio de suport per l'algoritme minmax creat. S'encarrega de retornar el valor de la heuristica d'un tauler en els nivell MAX de l'algorisme per a una profunditat donada
     *
-    * @param t tauler sobre el qual fer el moviment
-    * @param col columna sobre la qual s'ha fet l'ultima jugada.
+     * @param s tauler node del nivell MAX a retornar el valor
     * @param alfa valor de alfa per a la poda
     * @param beta valor de beta per a la poda.
     * @param profunditat profunditat del arbre de jugades.
+     * @return el valor de la heuristica d'un tauler en els nivell MAX de l'algorisme per a una profunditat donada
     */
     public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
         maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
@@ -134,13 +147,13 @@ public class PlayerMinimax implements IPlayer, IAuto {
         
     }
     /**
-    * Funcio de suport per l'algoritme minmax creat.
+    * Funcio de suport per l'algoritme minmax creat. S'encarrega de retornar el valor de la heuristica d'un tauler en els nivell MIN de l'algorisme per a una profunditat donada
     *
-    * @param t tauler sobre el qual fer el moviment
-    * @param col columna sobre la qual s'ha fet l'ultima jugada.
+     * @param s tauler node del nivell MAX a retornar el valor
     * @param alfa valor de alfa per a la poda
     * @param beta valor de beta per a la poda.
     * @param profunditat profunditat del arbre de jugades.
+     * @return el valor de la heuristica d'un tauler en els nivell Min de l'algorisme per a una profunditat donada
     */
     public int minValor(GameStatus s, int alfa, int beta, int profunditat){
         maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
@@ -172,6 +185,11 @@ public class PlayerMinimax implements IPlayer, IAuto {
         }
     }
     
+    /**
+     * Calcula l'heurística del tauler rebut per paràmetre segons l'heuristica que tingui configurada a l'atribut privat heuristic
+     * @param s tauler del qual se'n calcularà l'heurística
+     * @return l'heurística del tauler rebut per paràmetre
+     */
     public int getHeuristica(GameStatus s) {
         switch (heuristic) {
             case 1:

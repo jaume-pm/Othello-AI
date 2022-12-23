@@ -1,5 +1,7 @@
 package edu.upc.epsevg.prop.othello;
 
+import edu.upc.epsevg.prop.othello.players.pintor.Heuristica_3;
+import edu.upc.epsevg.prop.othello.players.pintor.Heuristica_1;
 import java.awt.*;
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;

@@ -2,7 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package edu.upc.epsevg.prop.othello;
+package edu.upc.epsevg.prop.othello.players.pintor;
+
+import edu.upc.epsevg.prop.othello.CellType;
+import edu.upc.epsevg.prop.othello.GameStatus;
 
 /**
  *
@@ -44,6 +47,12 @@ public class Heuristica_2 {
         return stability;
     }
 
+    /**
+     *
+     * @param s
+     * @param aliat
+     * @return
+     */
     public static int heuristica(GameStatus s, CellType aliat) {
         int mobility = computeMobility(s, aliat) - computeMobility(s, aliat.opposite(aliat));
         int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite(aliat));
