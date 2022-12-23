@@ -5,6 +5,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
 import edu.upc.epsevg.prop.othello.Heuristica_0;
 import edu.upc.epsevg.prop.othello.Heuristica_1;
 import edu.upc.epsevg.prop.othello.Heuristica_2;
+import edu.upc.epsevg.prop.othello.Heuristica_3;
 import edu.upc.epsevg.prop.othello.IAuto;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.Move;
@@ -29,7 +30,7 @@ public class PlayerID implements IPlayer, IAuto {
   final private  int MAX = 10000000;  // Maxim d'heuristica (10M)
   private CellType color;
   private boolean timeout;
-  private int heuristic = 2;
+  private int heuristic = 3;
   private int profunditat=2;
   private int nodes;
   private int maxDepth;
@@ -38,6 +39,7 @@ public class PlayerID implements IPlayer, IAuto {
   private Heuristica_1 heur1;
   private Heuristica_0 heur0;
   private Heuristica_2 heur2;
+  private Heuristica_3 heur3;
   private byte tipus = 0;//0 = Exacte, 1 = Alfa, 2 = Beta
   
     public PlayerID(String name, int size) {
@@ -296,6 +298,9 @@ public class PlayerID implements IPlayer, IAuto {
             case 2:
                 //Segona heurística
                 return heur2.heuristica(s, color);
+            case 3:
+                //Segona heurística
+                return heur3.heuristica(s, color);
             default:
                 //Primera heuristica, la més senzilla 
                 return heur0.heuristica(s, color);
