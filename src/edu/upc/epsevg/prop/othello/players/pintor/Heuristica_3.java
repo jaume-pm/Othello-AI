@@ -17,12 +17,11 @@ import edu.upc.epsevg.prop.othello.GameStatus;
 public class Heuristica_3 {
 
     // Constants for the weights of different factors in the evaluation function
-    private static final int MOBILITY_WEIGHT = 100;
-private static final int STABILITY_WEIGHT = 300;
-private static final int CORNER_WEIGHT = 1000;
-private static final int EDGE_WEIGHT = 0;
-private static final int PIECE_VALUE = 0;
-    private static boolean PROVA = false;
+    private static final int MOBILITY_WEIGHT = 20;
+    private static final int STABILITY_WEIGHT = 40;
+    private static final int CORNER_WEIGHT = 1000;
+    private static final int EDGE_WEIGHT = 40;
+    private static final int PIECE_VALUE = 1;
 
     private static int corners = 0;
     static CellType aliat;
@@ -122,7 +121,7 @@ private static final int PIECE_VALUE = 0;
                 }
             }
         }
-        return stability + gs.getScore(player) * 7;
+        return stability;
     }
 
     public static int heuristica(GameStatus s, CellType aliat) {
@@ -170,7 +169,7 @@ private static final int PIECE_VALUE = 0;
             return true;
         }
 
-        if (!casellaBlanca && casellaBlanca2) {
+        if (!casellaBlanca && !casellaBlanca2) {
             return true;
         }
 
@@ -208,7 +207,7 @@ private static final int PIECE_VALUE = 0;
             return true;
         }
 
-        if (!casellaBlanca && casellaBlanca2) {
+        if (!casellaBlanca && !casellaBlanca2) {
             return true;
         }
 
@@ -249,7 +248,7 @@ private static final int PIECE_VALUE = 0;
             return true;
         }
 
-        if (!casellaBlanca && casellaBlanca2) {
+        if (!casellaBlanca && !casellaBlanca2) {
             return true;
         }
 
@@ -290,7 +289,7 @@ private static final int PIECE_VALUE = 0;
             return true;
         }
 
-        if (!casellaBlanca && casellaBlanca2) {
+        if (!casellaBlanca && !casellaBlanca2) {
             return true;
         }
 

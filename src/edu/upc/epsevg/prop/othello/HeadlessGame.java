@@ -33,9 +33,10 @@ public class HeadlessGame {
         IPlayer player1 = new PlayerID("Minimax Iteratiu",1);
         //Player player2 = new RandomPlayer("Desdesmonasia");
         IPlayer player2 = new DesdemonaPlayer(1);//GB
-        HeadlessGame game = new HeadlessGame(player1, player2, 2, 10);
+        HeadlessGame game = new HeadlessGame(player1, player2, 10, 3);
         GameResult gr = game.start();
         System.out.println(gr);
+        System.out.print("10 segons");
 
     }
 
