@@ -8,55 +8,82 @@ import edu.upc.epsevg.prop.othello.CellType;
 import edu.upc.epsevg.prop.othello.GameStatus;
 
 /**
+ * Heurística millorada respecte a la 1. Ara ofereix valors dinàmics. Assigna
+ * els valors tenint en compte la mobilitat dels jugadors i els extrems del
+ * tauler (cantonades i vores) per determinar quin és el millor moviment a fer.
  *
  * @author Pollito
- *
  */
-//Problemes: Valors massa propers, posar més diferencia entre ells.
 public class Heuristica_2 {
-    // Constants for the weights of different factors in the evaluation function
-    private static final int MOBILITY_WEIGHT = 10;
-    private static final int STABILITY_WEIGHT = 20;
-    private static final int CORNER_WEIGHT = 50;
-    private static final int EDGE_WEIGHT = 10;
-    static String aliat;
 
-    // Helper function to compute the mobility of a player
-    private static int computeMobility(GameStatus s, CellType aliat1) {
-        int legalMoves = s.getMoves().size();
-        return legalMoves;
+    // Constants per als pesos dels diferents factors en la funció d'avaluació
+    private static final int PES_MOBILITAT = 10;
+    private static final int PES_CANTONADA = 50;
+    private static final int PES_VORA = 10;
+
+    /**
+     * Funció auxiliar que calcula la mobilitat d'un jugador. La mobilitat és la
+     * quantitat de moviments legals que té el jugador en el tauler actual.
+     *
+     * @param s Estat del joc.
+     * @return Mobilitat del jugador.
+     */
+    public static int calcularMobilitat(GameStatus s) {
+        return s.getMoves().size() * PES_MOBILITAT;
     }
 
-    // Helper function to compute the stability of a player's pieces
-    private static int computeStability(GameStatus s, CellType player) {
-        int stability = 0;
+    /**
+     * Funció auxiliar que calcula la mobilitat de l'enemic del jugador. La
+     * mobilitat és la quantitat de moviments legals que té l'enemic en el
+     * tauler actual.
+     *
+     * @param s Estat del joc.
+     * @return Mobilitat de l'enemic.
+     */
+    public static int calcularMobilitatEnemic(GameStatus s) {
+        GameStatus p = new GameStatus(s);
+        p.skipTurn();
+        return p.getMoves().size() * PES_MOBILITAT;
+    }
+
+    /**
+     * Funció auxiliar que calcula els extrems del tauler ocupats per un
+     * jugador. Els extrems són les cantonades i les vores del tauler.
+     *
+     * @param s Estat del joc.
+     * @param jugador Jugador del qual es vol calcular els extrems ocupats.
+     * @return Extrems ocupats pel jugador.
+     */
+    public static int calcularExtrems(GameStatus s, CellType jugador) {
+        int extrems = 0;
         for (int i = 0; i < s.getSize(); i++) {
             for (int j = 0; j < s.getSize(); j++) {
-                if (s.getPos(i, j) == player) {
-                    // Check if the piece is on a corner
+                if (s.getPos(i, j) == jugador) {
+                    // Comprovem si la peça és a una cantonada
                     if ((i == 0 || i == s.getSize() - 1) && (j == 0 || j == s.getSize() - 1)) {
-                        stability += CORNER_WEIGHT;
-                    }
-                    // Check if the piece is on an edge
+                        extrems += PES_CANTONADA;
+                    } // Comprovem si la peça és a un vora
                     else if (i == 0 || i == s.getSize() - 1 || j == 0 || j == s.getSize() - 1) {
-                        stability += EDGE_WEIGHT;
+                        extrems += PES_VORA;
                     }
                 }
             }
         }
-        return stability;
+        return extrems;
     }
 
     /**
+     * Funció principal de l'heurística que retorna una puntuació de l'estat del
+     * joc actual. Aquesta puntuació es basa en la mobilitat dels jugadors i els
+     * extrems del tauler ocupats per cada jugador.
      *
-     * @param s
-     * @param aliat
-     * @return
+     * @param s Estat del joc.
+     * @param aliat Aliat del qual es vol calcular la puntuació.
+     * @return Valor heurístic de l'estat del joc.
      */
     public static int heuristica(GameStatus s, CellType aliat) {
-        int mobility = computeMobility(s, aliat) - computeMobility(s, aliat.opposite(aliat));
-        int stability = computeStability(s, aliat) - computeStability(s, aliat.opposite(aliat));
-        return MOBILITY_WEIGHT * mobility + STABILITY_WEIGHT * stability;
+        int mobilitat = calcularMobilitat(s) - calcularMobilitatEnemic(s);
+        int extrems = calcularExtrems(s, aliat) - calcularExtrems(s, CellType.opposite(aliat));
+        return mobilitat + extrems;
     }
-
 }
