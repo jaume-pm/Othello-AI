@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * Jugador Minimax
  *
- * @author Roberto i Jaume
+ * @author Jaume i Roberto
  */
 public class PlayerMinimax implements IPlayer, IAuto {
 
@@ -29,8 +29,8 @@ public class PlayerMinimax implements IPlayer, IAuto {
   private Heuristica_0 heur0;
   private Heuristica_2 heur2;  
   private Heuristica_3 heur3;
-  double sumTime = 0;
-  double nJugades = 0;
+  private double sumTime = 0;
+  private double nJugades = 0;
 
   
     /**
@@ -41,9 +41,6 @@ public class PlayerMinimax implements IPlayer, IAuto {
     public PlayerMinimax(String name, int profunditat) {
         this.name = name+" ("+profunditat+")";
         this.profunditat = profunditat;
-        heur1 = new Heuristica_1();
-        heur0 = new Heuristica_0();
-        heur2 = new Heuristica_2();
     }
 
     /**
@@ -75,7 +72,7 @@ public class PlayerMinimax implements IPlayer, IAuto {
         double time = (endTime - startTime)/1000.0;
         sumTime+=time;
         ++nJugades;
-        System.out.printf("Mitja de temps de jugades de "+name+": %.4f%n", sumTime/(double)nJugades);
+        //System.out.printf("Mitja de temps de jugades de "+name+": %.4f%n", sumTime/(double)nJugades);
         return new Move(res, nodes, maxDepth, SearchType.MINIMAX);
     }
 

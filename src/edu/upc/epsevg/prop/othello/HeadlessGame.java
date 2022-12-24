@@ -8,6 +8,7 @@ package edu.upc.epsevg.prop.othello;
 import edu.upc.epsevg.prop.othello.players.DesdemonaPlayer;
 import edu.upc.epsevg.prop.othello.players.RandomPlayer;
 import edu.upc.epsevg.prop.othello.players.pintor.PlayerID;
+import edu.upc.epsevg.prop.othello.players.pintor.PlayerIDS;
 import edu.upc.epsevg.prop.othello.players.pintor.PlayerMinimax;
 
 import java.util.ArrayList;
@@ -31,14 +32,48 @@ public class HeadlessGame {
     public static void main(String[] args) {
 
         //IPlayer player1 = new RandomPlayer("Crazy Ivan");
-        IPlayer player1 = new PlayerID("IDS",8);
+        IPlayer player1 = new PlayerIDS("IDS");
         //Player player2 = new RandomPlayer("Desdesmonasia");
         //IPlayer player2 = new DesdemonaPlayer(1);//GB
-        IPlayer player2 = new PlayerMinimax("Minimax",8);//GB
-        HeadlessGame game = new HeadlessGame(player1, player2, 100000000, 5);
+        IPlayer player2 = new PlayerID("IDA Tables",2,true);//GB
+        IPlayer player3 = new PlayerID("IDA Tables",2,false);//GB
+        HeadlessGame game = new HeadlessGame(player1, player2, 1, 2);
         GameResult gr = game.start();
         System.out.println(gr);
         System.out.print("10 segons");
+        game = new HeadlessGame(player1, player3, 2, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player2, player3, 2, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player1, player2, 10, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player1, player3, 10, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player2, player3, 10, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player1, player2, 20, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player1, player3, 20, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+        game = new HeadlessGame(player2, player3, 20, 2);
+        gr = game.start();
+        System.out.println(gr);
+        System.out.print("10 segons");
+
 
     }
 

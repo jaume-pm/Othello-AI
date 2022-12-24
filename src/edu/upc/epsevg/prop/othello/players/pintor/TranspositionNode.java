@@ -9,7 +9,7 @@ import edu.upc.epsevg.prop.othello.players.pintor.Zobrist;
 
 /**
  * Node de la taula de transposicio
- * @author roberto
+ * @author Jaume i Roberto
  */
 public class TranspositionNode {
     private byte type,depth;

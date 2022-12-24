@@ -11,7 +11,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
  * Heurística millorada respecte a la 0. Assigna pesos a cada casella. Tot i
  * així aquests pesos són estàtics, és a dir, o varien segons l'estat dFel joc.
  *
- * @author Pollito
+ * @author Jaume i Roberto
  */
 //Problemes: Assigna valors estàtics a cada casella. No varien segons l'estat 
 //           del joc.

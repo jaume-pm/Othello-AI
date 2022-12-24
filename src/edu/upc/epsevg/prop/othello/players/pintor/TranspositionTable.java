@@ -9,7 +9,7 @@ import edu.upc.epsevg.prop.othello.players.pintor.Zobrist;
 
 /**
  * Taula de transposició
- * @author roberto
+ * @author Jaume i Roberto
  */
 public class TranspositionTable {
     private TranspositionNode[] table;
@@ -21,7 +21,7 @@ public class TranspositionTable {
      * @param size mida de la taula de transposicions en GB
      */
     public TranspositionTable(int size) {
-        this.size = size*1073741824/30;
+        this.size = 1073741824/30*size;
         table = new TranspositionNode[this.size];
     }
     

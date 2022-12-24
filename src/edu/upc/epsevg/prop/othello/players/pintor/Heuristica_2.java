@@ -12,7 +12,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
  * els valors tenint en compte la mobilitat dels jugadors i els extrems del
  * tauler (cantonades i vores) per determinar quin és el millor moviment a fer.
  *
- * @author Pollito
+ * @author Jaume i Roberto
  */
 public class Heuristica_2 {
 

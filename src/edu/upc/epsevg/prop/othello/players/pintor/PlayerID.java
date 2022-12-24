@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Jugador IDS
  *
- * @author Roberto i Jaume
+ * @author Jaume i Roberto
  */
 public class PlayerID implements IPlayer, IAuto {
   private TranspositionTable taula;
@@ -38,19 +38,22 @@ public class PlayerID implements IPlayer, IAuto {
   private Heuristica_2 heur2;
   private Heuristica_3 heur3;
   private byte tipus = 0;//0 = Exacte, 1 = Alfa, 2 = Beta
+  private double sumTime = 0;
+  private double nJugades = 0;
+  private int sumProf = 0;
   
     /**
      * Constructora de la classe PlayerID
      * @param name nom del jugador
      * @param size tamany màxim que ocuparà la taula de transposicions (en GB)
+     * @param agressive
      */
-    public PlayerID(String name, int size) {
-        this.name = name+"-h"+heuristic;
+    public PlayerID(String name, int size, Boolean agressive) {
+        if(agressive)this.name = name+"-h"+heuristic+"-agressive";
+        else this.name = name+"-h"+heuristic+"-chill";
+        this.agressive = agressive;
         taula = new TranspositionTable(size);
         z = new Zobrist();
-        heur1 = new Heuristica_1();
-        heur0 = new Heuristica_0();
-        heur2 = new Heuristica_2();
     }
 
     /**
@@ -70,9 +73,19 @@ public class PlayerID implements IPlayer, IAuto {
      */
     @Override
     public Move move(GameStatus s) {
+        double startTime = System.currentTimeMillis();
+        
         color = s.getCurrentPlayer();
         profunditat = 1;
         Point res = IterativeMinMax(s);
+        
+        double endTime = System.currentTimeMillis();
+        //Calculem el temps que ha tardat i fem mitja
+        double time = (endTime - startTime)/1000.0;
+        sumTime+=time;
+        ++nJugades;
+        //System.out.printf("Mitja de temps de jugades de "+name+": %.4f%n", sumTime/(double)nJugades);
+        //System.out.printf("Mitja profunditat assolida de "+name+": %.4f%n", sumProf/(double)nJugades);
         return new Move(res, nodes, maxDepth, SearchType.MINIMAX_IDS);
     }
 
@@ -107,12 +120,14 @@ public class PlayerID implements IPlayer, IAuto {
             if(!timeout){
                 nodes = preNodes;
                 maxDepth = preMaxDepth;
+                sumProf+=maxDepth;
                 return preres;
             }else{
                 preNodes = nodes;
                 preMaxDepth = maxDepth;
             }
         }
+        sumProf+=maxDepth;
         return res;
     }
     
@@ -130,7 +145,7 @@ public class PlayerID implements IPlayer, IAuto {
             GameStatus aux = new GameStatus(s);
             aux.movePiece(move);
             long hash = z.computeZobristHashBits(aux);
-            int value = taula.getValue(hash, z.ocupationLong(), /*z.colorLong()*/0);
+            int value = taula.getValue(hash, z.ocupationLong(), z.colorLong());
             if(maxValue < value){
                 maxValue = value;
                 res = move;

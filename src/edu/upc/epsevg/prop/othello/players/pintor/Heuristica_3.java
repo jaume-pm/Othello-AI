@@ -14,7 +14,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
  * jugadors i els extrems del tauler (cantonades i vores) per determinar quin és
  * el millor moviment a fer.
  *
- * @author Pollito
+ * @author Jaume i Roberto
  */
 
 public class Heuristica_3 {

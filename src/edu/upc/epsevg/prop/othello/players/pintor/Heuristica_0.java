@@ -10,7 +10,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
 /**
  * Heurística bàsica. Només mira el nombre de fitxes de cada jugador.
  *
- * @author Pollito
+ * @author Jaume i Roberto
  */
 //Problemes: No té en compte la posició de les fiches
 public class Heuristica_0 {

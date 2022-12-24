@@ -10,7 +10,7 @@ import java.util.Random;
 
 /**
  * Calculador Zobrist
- * @author roberto
+ * @author Jaume i Roberto
  */
 public class Zobrist {
 

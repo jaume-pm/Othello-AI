@@ -6,6 +6,7 @@ import edu.upc.epsevg.prop.othello.Level;
 import edu.upc.epsevg.prop.othello.IPlayer;
 import edu.upc.epsevg.prop.othello.players.DesdemonaPlayer;
 import edu.upc.epsevg.prop.othello.players.pintor.PlayerID;
+import edu.upc.epsevg.prop.othello.players.pintor.PlayerIDS;
 import edu.upc.epsevg.prop.othello.players.pintor.PlayerMinimax;
 
 import javax.swing.SwingUtilities;
@@ -29,11 +30,11 @@ public class Game {
                 //IPlayer player1 = new RandomPlayer("Crazy Ivan");
                 //IPlayer player2 = new HumanPlayer("Human1");
                 //IPlayer player1 = new DesdemonaPlayer(1);//GB
-                IPlayer player2 = new PlayerID("Minimax Iteratiu",9);
-                //IPlayer player1 = new DesdemonaPlayer(1);//GB
-                //IPlayer player2 = new PlayerID("IDS", 1);
-                IPlayer player1 = new PlayerMinimax("minimax",9);                
-                new Board(player1 , player2, 2, false);
+                //IPlayer player1 = new PlayerID("IDS Tables",2,true);
+                IPlayer player1 = new DesdemonaPlayer(2);//GB
+                IPlayer player2 = new PlayerIDS("IDS");
+                //IPlayer player1 = new PlayerMinimax("minimax",9);                
+                new Board(player1 , player2, 5, false);
              }
         });
     }
