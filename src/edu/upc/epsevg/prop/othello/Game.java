@@ -29,10 +29,10 @@ public class Game {
                 //IPlayer player1 = new RandomPlayer("Crazy Ivan");
                 //IPlayer player2 = new HumanPlayer("Human1");
                 //IPlayer player1 = new DesdemonaPlayer(1);//GB
-                IPlayer player2 = new PlayerID("Minimax Iteratiu",1);
-                IPlayer player1 = new DesdemonaPlayer(1);//GB
+                IPlayer player2 = new PlayerID("Minimax Iteratiu",9);
+                //IPlayer player1 = new DesdemonaPlayer(1);//GB
                 //IPlayer player2 = new PlayerID("IDS", 1);
-                //IPlayer player1 = new PlayerMinimax("minimax",8);                
+                IPlayer player1 = new PlayerMinimax("minimax",9);                
                 new Board(player1 , player2, 2, false);
              }
         });

@@ -24,10 +24,14 @@ public class PlayerMinimax implements IPlayer, IAuto {
   private int profunditat;
   private int nodes;
   private int maxDepth;
-  private int heuristic = 2;
+  private int heuristic = 3;
   private Heuristica_1 heur1;
   private Heuristica_0 heur0;
-  private Heuristica_2 heur2;
+  private Heuristica_2 heur2;  
+  private Heuristica_3 heur3;
+  double sumTime = 0;
+  double nJugades = 0;
+
   
     /**
      * Constructora de la classe PlayerMinimax
@@ -59,10 +63,20 @@ public class PlayerMinimax implements IPlayer, IAuto {
      */
     @Override
     public Move move(GameStatus s) {
+        double startTime = System.currentTimeMillis();
+        
         color = s.getCurrentPlayer();
         nodes = 1;
         maxDepth = 0;
-        return new Move(minMax(s, profunditat),nodes,maxDepth,SearchType.MINIMAX);
+        Point res = minMax(s, profunditat);
+        
+        double endTime = System.currentTimeMillis();
+        //Calculem el temps que ha tardat i fem mitja
+        double time = (endTime - startTime)/1000.0;
+        sumTime+=time;
+        ++nJugades;
+        System.out.printf("Mitja de temps de jugades de "+name+": %.4f%n", sumTime/(double)nJugades);
+        return new Move(res, nodes, maxDepth, SearchType.MINIMAX);
     }
 
     /**
@@ -120,10 +134,12 @@ public class PlayerMinimax implements IPlayer, IAuto {
     public int maxValor(GameStatus s, int alfa, int beta, int profunditat){
         maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(s.isGameOver()){
-            if(color == s.GetWinner())
+            int punts = s.getScore(color)-s.getScore(color.opposite(color));
+            if(punts > 0)
                 return MAX;
             else
-                return -MAX;
+                if(punts == 0)return 0;
+                else return -MAX;
         }
         if(s.getCurrentPlayer() != color)
             return minValor(s, alfa, beta, profunditat);
@@ -158,10 +174,12 @@ public class PlayerMinimax implements IPlayer, IAuto {
     public int minValor(GameStatus s, int alfa, int beta, int profunditat){
         maxDepth = Math.max(maxDepth, this.profunditat-profunditat);
         if(s.isGameOver()){
-            if(color == s.GetWinner())
+            int punts = s.getScore(color)-s.getScore(color.opposite(color));
+            if(punts > 0)
                 return MAX;
             else
-                return -MAX;
+                if(punts == 0)return 0;
+                else return -MAX;
         }
         if(s.getCurrentPlayer() == color)
             return maxValor(s, alfa, beta, profunditat);
@@ -198,6 +216,9 @@ public class PlayerMinimax implements IPlayer, IAuto {
             case 2:
                 //Segona heurística
                 return heur2.heuristica(s, color);
+            case 3:
+                //Segona heurística
+                return heur3.heuristica(s, color);
             default:
                 //Primera heuristica, la més senzilla 
                 return heur0.heuristica(s, color);

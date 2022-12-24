@@ -8,6 +8,7 @@ package edu.upc.epsevg.prop.othello;
 import edu.upc.epsevg.prop.othello.players.DesdemonaPlayer;
 import edu.upc.epsevg.prop.othello.players.RandomPlayer;
 import edu.upc.epsevg.prop.othello.players.pintor.PlayerID;
+import edu.upc.epsevg.prop.othello.players.pintor.PlayerMinimax;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,10 +31,11 @@ public class HeadlessGame {
     public static void main(String[] args) {
 
         //IPlayer player1 = new RandomPlayer("Crazy Ivan");
-        IPlayer player1 = new PlayerID("Minimax Iteratiu",1);
+        IPlayer player1 = new PlayerID("IDS",8);
         //Player player2 = new RandomPlayer("Desdesmonasia");
-        IPlayer player2 = new DesdemonaPlayer(1);//GB
-        HeadlessGame game = new HeadlessGame(player1, player2, 10, 3);
+        //IPlayer player2 = new DesdemonaPlayer(1);//GB
+        IPlayer player2 = new PlayerMinimax("Minimax",8);//GB
+        HeadlessGame game = new HeadlessGame(player1, player2, 100000000, 5);
         GameResult gr = game.start();
         System.out.println(gr);
         System.out.print("10 segons");
@@ -53,7 +55,7 @@ public class HeadlessGame {
     public GameResult start() {
         GameResult gr = new GameResult();
         for (int i = 0; i < gameCount; i++) {
-            //System.out.println(">" + i);
+            System.out.println("------------------------FINAL DE PARTIDA----------------------------");
             gr.update(play(players[0], players[1]));
         }
         return gr;

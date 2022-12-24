@@ -314,7 +314,7 @@ public class Board extends MouseAdapter {
                     endTurn();
 
                 }
-                System.out.print( heur3.heuristica(status,CellType.PLAYER2) + "\n"); // TODO: BORRAR
+                //System.out.print( heur3.heuristica(status,CellType.PLAYER2) + "\n"); // TODO: BORRAR
             } catch (Exception ignore) {
                 if(ignore!=null) ignore.printStackTrace();
                 Logger.getLogger(Board.class.getName()).log(java.util.logging.Level.SEVERE, "Player is throwing an Exception, game is lost...",

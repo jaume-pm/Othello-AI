@@ -8,7 +8,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
 import edu.upc.epsevg.prop.othello.players.pintor.Zobrist;
 
 /**
- *
+ * Node de la taula de transposicio
  * @author roberto
  */
 public class TranspositionNode {

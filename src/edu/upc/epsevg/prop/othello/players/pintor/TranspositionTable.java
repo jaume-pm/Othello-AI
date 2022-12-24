@@ -8,7 +8,7 @@ import edu.upc.epsevg.prop.othello.GameStatus;
 import edu.upc.epsevg.prop.othello.players.pintor.Zobrist;
 
 /**
- *
+ * Taula de transposició
  * @author roberto
  */
 public class TranspositionTable {

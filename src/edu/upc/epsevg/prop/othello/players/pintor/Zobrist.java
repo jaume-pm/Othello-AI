@@ -9,7 +9,7 @@ import java.util.BitSet;
 import java.util.Random;
 
 /**
- *
+ * Calculador Zobrist
  * @author roberto
  */
 public class Zobrist {
