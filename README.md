@@ -5,7 +5,7 @@ MiniMax-based AI with alpha-beta pruning and a refined heuristic for an assignme
 
 Pintor was placed on the top 3 at the AI competition of my class.
 
-![](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2tjenZjemlucmlrM28wcHhxM3F5aTRqamRtMWdmN25tODZ3MHVkNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dojYXMR3JGJ1q9vaRr/giphy.gif)
+![](https://github.com/jaume-pm/Othello-AI/gif.mp4))
 
 ## Compilation and execution
 Dependencies:
