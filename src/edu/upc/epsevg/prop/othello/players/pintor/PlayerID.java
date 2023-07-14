@@ -49,7 +49,7 @@ public class PlayerID implements IPlayer, IAuto {
      * @param agressive
      */
     public PlayerID(String name, int size, Boolean agressive) {
-        if(agressive)this.name = name+"-h"+heuristic+"-agressive";
+        if(agressive) this.name = name+"-h"+heuristic+"-agressive";
         else this.name = name+"-h"+heuristic+"-chill";
         this.agressive = agressive;
         taula = new TranspositionTable(size);

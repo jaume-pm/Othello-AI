@@ -29,12 +29,12 @@ public class Game {
 
                 //IPlayer player1 = new RandomPlayer("Crazy Ivan");
                 //IPlayer player2 = new HumanPlayer("Human1");
-                //IPlayer player1 = new DesdemonaPlayer(1);//GB
-                //IPlayer player1 = new PlayerID("IDS Tables",2,true);
-                IPlayer player1 = new DesdemonaPlayer(2);//GB
-                IPlayer player2 = new PlayerIDS("IDS");
+                IPlayer player1 = new DesdemonaPlayer(1);//GB
+                //IPlayer player2 = new PlayerID("Pintor",1,true);
+                IPlayer player2 = new PlayerIDS("Pintor");
+                //IPlayer player2 = new PlayerIDS("IDS");
                 //IPlayer player1 = new PlayerMinimax("minimax",9);                
-                new Board(player1 , player2, 5, false);
+                new Board(player1 , player2, 2, false);
              }
         });
     }
