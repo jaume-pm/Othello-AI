@@ -9,7 +9,7 @@ Pintor was placed on the top 3 at the AI competition of my class.
 Dependencies:
 - JDK 17
 
-This will execute my AI (pintor - white) against the sample one given by the professors (Desdemona - black):
+This will execute my AI (Pintor - white) against the sample one given by the professors (Desdemona - black):
 ```sh
 git clone https://github.com/jaume-pm/Othello-AI
 cd Othello-AI
