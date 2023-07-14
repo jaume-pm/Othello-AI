@@ -5,6 +5,8 @@ MiniMax-based AI with alpha-beta pruning and a refined heuristic for an assignme
 
 Pintor was placed on the top 3 at the AI competition of my class.
 
+![](https://giphy.com/embed/dojYXMR3JGJ1q9vaRr)
+
 ## Compilation and execution
 Dependencies:
 - JDK 17
