@@ -1,7 +1,9 @@
 # Othello AI - Pintor
 ## Description
 
-MiniMax-based AI with alpha-beta pruning and a refined heuristic for an assignment of the subject Programming Projects (PROP) of the Universitat Politècnica de Catalunya Barcelona Tech (UPC). Top 3 at the AI competition of my class.
+MiniMax-based AI with alpha-beta pruning and a refined heuristic for an assignment of the subject Programming Projects (PROP) of the Universitat Politècnica de Catalunya Barcelona Tech (UPC).
+
+Pintor was placed on the top 3 at the AI competition of my class.
 
 ## Compilation and execution
 Dependencies:
